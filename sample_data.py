@@ -61,6 +61,8 @@ cols = [
     "c8a_program_participant",
     "historically_underutilized_business_zone_hubzone_firm",
     "contracting_officers_determination_of_business_size",
+    "domestic_or_foreign_entity_code",
+    "domestic_or_foreign_entity",
 
     # Place of performance dimension
     # dim_location, PK (surrogate key needed) with grain of state, county, city, country
@@ -87,6 +89,8 @@ cols = [
     "parent_award_type",
     "multiple_or_single_award_idv",
     "type_of_idc",
+    "type_of_contract_pricing_code",
+    "type_of_contract_pricing",
 
     # Competition / set-aside (junk dimension candidate)
     # dim_competition, PK (surrogate key needed) with grain of related fields
