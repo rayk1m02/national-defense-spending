@@ -1,6 +1,6 @@
 import requests, time
 
-# investigating DOE dollar break down (NNSA), find real agency IDs, check if pre-generated files exist for DOE.
+# investigating DOE dollar break down (NNSA), find real agency IDs, check if pre-generated files exist for DOE, figuring out NNSA search name
 
 ### ----------------------------------------------------------------------------------------------------------------------------- ###
 
