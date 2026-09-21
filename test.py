@@ -1,5 +1,7 @@
 import requests, time
 
+# testing the /api/v2/download/* API for DOD
+
 payload = {
     "filters": {
         "agencies": [{"type": "awarding", "tier": "toptier", "name": "Department of Defense"}],
