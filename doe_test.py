@@ -1,4 +1,4 @@
-import requests, time
+import requests, time, json
 
 # investigating DOE dollar break down (NNSA), find real agency IDs, check if pre-generated files exist for DOE, figuring out NNSA search name
 
@@ -8,7 +8,7 @@ import requests, time
 # we see that NNSA makes up about half of DOE's total spending. The rest are non-defense energy programs.
 r = requests.get("https://api.usaspending.gov/api/v2/agency/089/sub_agency/", timeout=30)
 print(r.status_code)
-print(r.json())
+print(json.dumps(r.json(), indent=2))
 
 ### ----------------------------------------------------------------------------------------------------------------------------- ###
 
@@ -22,15 +22,15 @@ print(r.status_code)
 agencies = r.json()
 
 cfo = agencies["agencies"]["cfo_agencies"]
-doe = next(a for a in cfo if "Energy" in a["name"])
+doe = next(a for a in cfo if "Energy" in a["name"]) # next() pulls first item out of iterator, then raises StopIteration
 dod = next(a for a in cfo if "Defense" in a["name"])
-print("DOE:", doe)
-print("DoD:", dod)
+print("DOE:", doe) # 089
+print("DoD:", dod) # 097
 
 # see DOE's break down by sub-agency (how much is NNSA). This component mirros block 1, but we use and verify with the official agency ID here.
 r2 = requests.get(f"https://api.usaspending.gov/api/v2/agency/{doe['toptier_code']}/sub_agency/", timeout=30)
 print(r2.status_code)
-print(r2.json())
+print(json.dumps(r2.json(), indent=2))
 
 # check if DOE has pre-generated files and if we can filter by NNSA (we cannot). 
 # given that, we will need to use /api/v2/download/* instead of /api/v2/bulk_download/* for DOE data
@@ -40,7 +40,7 @@ r3 = requests.post(
     timeout=30
 )
 print(r3.status_code)
-print(r3.json())
+print(json.dumps(r3.json(), indent=2))
 
 ### ----------------------------------------------------------------------------------------------------------------------------- ###
 
@@ -68,4 +68,4 @@ while True:
     if data.get("status") in ("finished", "failed"):
         break
     time.sleep(5)
-print(data)
+print(json.dumps(data, indent=2))
