@@ -25,7 +25,7 @@ r2 = requests.post(
     json={"agency": dod["toptier_agency_id"], "fiscal_year": 2024, "type": "contracts"},
     timeout=30
 )
-print(json.dumps(r2.json(), indent=2))
+# print(json.dumps(r2.json(), indent=2))
 
 # generated file url for full data
 r3 = requests.get("https://files.usaspending.gov/award_data_archive/FY2024_097_Contracts_Full_20260906.zip", timeout=120)
@@ -40,3 +40,4 @@ with zipfile.ZipFile("dod_test.zip") as z:
 # check columns and see if it matches 297 columns like DOE
 print(len(df.columns))
 # print(df.columns.tolist())
+
