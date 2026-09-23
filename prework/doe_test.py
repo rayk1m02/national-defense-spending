@@ -28,11 +28,9 @@ agencies = r.json()
 
 cfo = agencies["agencies"]["cfo_agencies"]
 doe = next(a for a in cfo if "Energy" in a["name"])     # next() pulls first item out of iterator, then raises StopIteration
-dod = next(a for a in cfo if "Defense" in a["name"])
 print("DOE:", doe)                                      # {'name': 'Department of Energy', 'toptier_agency_id': 78, 'toptier_code': '089'}
-print("DoD:", dod)                                      # 097
 
-# see DOE's break down by sub-agency (how much is NNSA). This component mirros block 1, but we use and verify with the official agency ID here.
+# see DOE's break down by sub-agency (how much is NNSA). This component mirros block 1, but we use and verify with the official agency identifier (toptier_code) here.
 r1 = requests.get(f"https://api.usaspending.gov/api/v2/agency/{doe['toptier_code']}/sub_agency/", timeout=30)
 print(r1.status_code)
 print(json.dumps(r1.json(), indent=2))
