@@ -1,44 +1,33 @@
-import requests, time
-import json, zipfile
-import pandas as pd
+import requests, json
 
 # DRA - Defense Related Activites (budget function 054)
 
-# list agencies
-r = requests.post(
-    "https://api.usaspending.gov/api/v2/bulk_download/list_agencies/",
-    json={"type": "award_agencies"},
+r3 = requests.post(
+    "https://api.usaspending.gov/api/v2/spending/",
+    json={"type": "agency", "filters": {"fy": "2024", "quarter": 4, "budget_subfunction": "054"}},
     timeout=30
 )
-agencies = r.json()
+print(json.dumps(r3.json(), indent=2))
 
-# find DRA toptier_code
-cfo = agencies["agencies"]["cfo_agencies"]
-dra = next(a for a in cfo if "Homeland Security" in a["name"]) # check other agencies as well.
-# print("DRA:", dra) # 070
 
-# see DRA sub-agency breakdown
-r1 = requests.get(f"https://api.usaspending.gov/api/v2/agency/{dra['toptier_code']}/budget_function/?fiscal_year=2024", timeout=30)
-# print(json.dumps(r1.json(), indent=2))
+for agency_id, agency_name in [("1173", "DOD"), ("252", "DOJ"), ("731", "DOT"), ("766", "DHS"), ("1143", "PCLOB")]:
+    r = requests.post(
+        "https://api.usaspending.gov/api/v2/spending/",
+        json={
+            "type": "federal_account",
+            "filters": {"fy": "2024", "quarter": 4, "budget_subfunction": "054", "agency": agency_id}
+        },
+        timeout=30
+    )
+    print(f"--- {agency_name} ---")
+    for acct in sorted(r.json()["results"], key=lambda x: x["amount"], reverse=True):
+        print(f"{acct['name']:<70} {acct['amount']:,.2f}")
+    print()
 
 '''
-Updated reasoning: 054 is NOT negligible in dollar terms. 
-DHS + DoD have only been confirmed as two of the agencies holding 054 dollars, not necessarily all of them. 
-Government-wide agency breakdown for 054 (via /api/v2/spending/, type=agency, filtered on the 054 subfunction id) pending
+Department of Defense                              161,105,000,000.00   1173
+Department of Justice                              12,165,636,827.12    252
+Department of Transportation                       1,518,330,174.83     731
+Department of Homeland Security                    656,218,040.04       766
+Privacy and Civil Liberties Oversight Board        11,648,086.29        1143
 '''
-
-hits = []
-url = "https://api.usaspending.gov/api/v2/agency/097/federal_account/?fiscal_year=2024&limit=100"
-
-while url:
-    r = requests.get(url, timeout=30)
-    data = r.json()
-    for account in data["results"]:
-        for child in account["children"]:
-            hits.append((child["name"], child["obligated_amount"]))
-    next_page = data["page_metadata"]["next"]
-    url = f"https://api.usaspending.gov/api/v2/agency/097/federal_account/?fiscal_year=2024&limit=100&page={next_page}" if next_page else None
-
-for name, amt in hits:
-    if any(kw in name.lower() for kw in ["retire", "health", "medicare"]):
-        print(name, amt)
