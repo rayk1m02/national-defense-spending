@@ -133,9 +133,20 @@ with zipfile.ZipFile(r"C:\Users\rkim\Desktop\Learning\national-defense-spending\
 '021-2020;097-0130'
 '''
 
-# federal_accounts_funding_this_award holds Treasury Account Symbols shorthand, 
-# <agency_code>-<main_account_code>, semicolon-separated when more than one funds an award
-# explanation
+# context
+    # agency_code:          federal agency (DOD: 097, DHS: 070, DOJ: 015, etc)
+    # main_account_code:    federal account under an agency (Procurement, Construction, and..: 0412, Ready Reserve Force, Maritime...: 1710)
+    # sub_account_code:     further subdivision within a federal account (so far every example has shown 000, general fund)
+
+# treasury_accounts_funding_this_award holds <agency_code>-<period of availability>-<main_account_code>-<sub_account_code>
+    # 097-2023/2023-0100-000
+        # 097: DOD agency code
+        # 2023/2023: fiscal year
+        # 0100: main account code
+        # 000: no sub-account
+
+# federal_accounts_funding_this_award holds just the <agency_code>-<main_account_code>
+
 for agency_id, agency_name in [("766", "DHS"), ("731", "DOT")]:
     r = requests.post(
         "https://api.usaspending.gov/api/v2/spending/",
@@ -168,8 +179,12 @@ for agency_id, agency_name in [("766", "DHS"), ("731", "DOT")]:
   },
 '''
 
+# * account_number field from api/v2/spending/ with budget_subfunction 054 and agency_id, matches our federal_accounts_funding_this_award column values
 DHS_CISA_ACCOUNTS = {"070-0412", "070-0805", "070-0565", "070-1911"}
 DOT_MARAD_ACCOUNTS = {"069-1710", "069-1711", "069-1718", "069-1717"}
+
+# zip process for DHS (toptier 070) and DOT (toptier 069)
+# implement
 
 # def funded_by(value, target_accounts):
 #     if pd.isna(value):
