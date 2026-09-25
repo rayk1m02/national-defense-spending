@@ -40,4 +40,3 @@ with zipfile.ZipFile("dod_test.zip") as z:
 # check columns and see if it matches 297 columns like DOE
 print(len(df.columns))
 # print(df.columns.tolist())
-
