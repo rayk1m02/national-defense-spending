@@ -27,7 +27,7 @@ r2 = requests.post(
 )
 # print(json.dumps(r2.json(), indent=2))
 
-# generated file url for full data
+# unzip and open generated file url for full data
 r3 = requests.get("https://files.usaspending.gov/award_data_archive/FY2024_097_Contracts_Full_20260906.zip", timeout=120)
 with open("dod_test.zip", "wb") as f:
     f.write(r3.content)
