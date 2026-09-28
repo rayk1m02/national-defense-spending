@@ -1,3 +1,2 @@
 venv/
-bulk_files_sample/
-endpoint_mapping/*.zip
+bulk_data_samples/
