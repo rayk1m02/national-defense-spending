@@ -56,8 +56,9 @@ for agency_id, agency_name in [("1173", "DOD"), ("252", "DOJ"), ("731", "DOT"), 
     )
     print(f"--- {agency_name} ---")
     for acct in sorted(r.json()["results"], key=lambda x: x["amount"], reverse=True):
-        print(f"{acct['name']:<70} {acct['amount']:,.2f}")
-    print()
+        print(f"{acct['name']:<70} {acct['amount']:,.2f} {acct['account_number']}")
+        # print(json.dumps(r.json()["results"], indent=2)) -- SEE BELOW (duplication)
+    print() 
 '''
 eg:
 
@@ -68,11 +69,11 @@ Radiation Exposure Compensation Trust Fund, Justice                    52,313,37
 ...
 
 --- DHS ---
-Procurement, Construction, and Improvements, Cybersecurity and Infrastructure Security Agency, Homeland Security 506,501,490.81
-Federal Assistance, Countering Weapons of Mass Destruction Office, Homeland Security 146,403,866.15
-Research and Development, Cybersecurity and Infrastructure Security Agency, Homeland Security 3,312,683.08
-Infrastructure Protection and Information Security, Cybersecurity and Infrastructure Security Agency, Homeland Security 0.00
-Cybersecurity Response and Recovery Fund, Cybersecurity and Infrastructure Security Agency, Homeland Security. 0.00
+Procurement, Construction, and Improvements, Cybersecurity and Infrastructure Security Agency, Homeland Security            506,501,490.81
+Federal Assistance, Countering Weapons of Mass Destruction Office, Homeland Security                                        146,403,866.15
+Research and Development, Cybersecurity and Infrastructure Security Agency, Homeland Security                               3,312,683.08
+Infrastructure Protection and Information Security, Cybersecurity and Infrastructure Security Agency, Homeland Security     0.00
+Cybersecurity Response and Recovery Fund, Cybersecurity and Infrastructure Security Agency, Homeland Security.              0.00
 '''
 
 # find dhs id
@@ -106,7 +107,7 @@ Federal Law Enforcement Training Center
 Countering Weapons of Mass Destruction
 '''
 
-# since our sub-agency under DHS does not show DHS-CISA, we use DOD zip file to see if we can filter by federal account column in bulk download url
+# since our sub-agency under DHS (which is itself a sub-agency of DRA), does not show DHS-CISA (which is a federal account not sub-agency), we use DOD zip file to see if we can filter by federal account column in bulk download url
 # with zipfile.ZipFile(r"C:\Users\rkim\Desktop\Learning\national-defense-spending\endpoint_mapping\dod_test.zip") as z:
 #     print(z.namelist())
 #     with z.open(z.namelist()[0]) as f:
