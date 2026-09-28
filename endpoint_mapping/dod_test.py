@@ -93,7 +93,7 @@ with open("../bulk_data_samples/dod_sub_agencies.json", "w", encoding="utf-8") a
 }
 '''
 
-# check DOD pre-generated files
+# check DOD bulk data
 r2 = requests.post(
     "https://api.usaspending.gov/api/v2/bulk_download/list_monthly_files/",
     json={"agency": dod["toptier_agency_id"], "fiscal_year": 2024, "type": "contracts"},
