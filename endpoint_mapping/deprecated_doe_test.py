@@ -12,7 +12,7 @@ print(r.status_code)
 agencies = r.json()
 
 cfo = agencies["agencies"]["cfo_agencies"]
-doe = next(a for a in cfo if "Energy" in a["name"])     # next() pulls first item out of iterator, then raises StopIteration
+doe = next(a for a in cfo if "Energy" in a["name"])     # next() pulls next item out of itereator. If no default is set, raises StopIteration exception
 print("DOE:", doe)                                      # {'name': 'Department of Energy', 'toptier_agency_id': 78, 'toptier_code': '089'}
 
 # see DOE's break down by sub-agency (how much is NNSA).
