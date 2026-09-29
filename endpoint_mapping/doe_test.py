@@ -56,13 +56,13 @@ with open("../bulk_data_samples/json_doe_sub_agencies.json", "w", encoding="utf-
     json.dump(r1.json(), f, indent=2)
 '''
 {
-  "toptier_code": "089",
-  "fiscal_year": 2026,
-  "page_metadata": {
+    "toptier_code": "089",
+    "fiscal_year": 2026,
+    "page_metadata": {
     ...
     "hasPrevious": false
-  },
-  "results": [
+    },
+    "results": [
         {
             "abbreviation": "DOE",
             "name": "Department of Energy",
@@ -104,7 +104,7 @@ with open("../bulk_data_samples/json_doe_sub_agencies.json", "w", encoding="utf-
             ]
         }
     ],
-  "messages": []
+    "messages": []
 }
 '''
 

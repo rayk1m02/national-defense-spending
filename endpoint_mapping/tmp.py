@@ -2,38 +2,50 @@ import requests, time
 import json, zipfile
 import pandas as pd
 
-# list all the agencies
-r = requests.post(
-    "https://api.usaspending.gov/api/v2/bulk_download/list_agencies/",
-    json={"type": "award_agencies"},
-    timeout=30
-)
-agencies = r.json()
+# payload = {
+#     "filters": {
+#         "agencies": [{"type": "awarding", "tier": "toptier", "name": "Department of Energy"}],
+#         "time_period": [{"start_date": "2024-01-01", "end_date": "2024-01-31"}],
+#     },
+#     "spending_level": ["transactions"],
+#     "columns": []  # empty = all columns
+# }
 
+# r3 = requests.post("https://api.usaspending.gov/api/v2/download/search/", json=payload, timeout=30)
+# result = r3.json()
+# # print(r.status_code)
+# # print(json.dumps(result, indent=2))
 
-# find DOE's toptier_code
-cfo = agencies["agencies"]["cfo_agencies"]
-doe = next(a for a in cfo if "Department of Energy" in a["name"])
+# status_url = result["status_url"]
 
+# # we poll status_url to know when the background generation job completes so that we can download our file_url.
+# while True:
+#     r4 = requests.get(status_url, timeout=30)
+#     data = r4.json()
+#     if data.get("status") in ("finished", "failed"):
+#         break
+#     time.sleep(5)
 
-# check DOE bulk data
-r2 = requests.post(
-    "https://api.usaspending.gov/api/v2/bulk_download/list_monthly_files/",
-    json={"agency": doe["toptier_agency_id"], "fiscal_year": 2024, "type": "contracts"},
-    timeout=30
-)
+# r5 = requests.get(data["file_url"], timeout=60)
+# with open("../bulk_data_samples/zip_doe_download.zip", "wb") as f:      # wb (write binary)
+#     f.write(r5.content)                                                 # save those bytes to disk
 
+# open zip without manual extraction
+with zipfile.ZipFile("../bulk_data_samples/zip_doe_download.zip") as z:
+    # print(z.namelist())                                                     # what files are inside (should be one csv, so confirming the name)
+    csv_name = z.namelist()[0]                                              # grab the file
+    with z.open(csv_name) as f:                                             # open csv in memory
+        df = pd.read_csv(f)
 
-r3 = requests.get("https://files.usaspending.gov/award_data_archive/FY2024_089_Contracts_Full_20260906.zip", timeout=120)
-with open("../bulk_data_samples/doe_bulk_full.zip", "wb") as f:
-    f.write(r3.content)
+# for i, col in enumerate(df.columns):
+#     print(i, col)
+DOE_DEFENSE_OFFICE_CODES = [
+    "892332", "892330", "892331",                                   # NNSA
+    "893033", "893035", "893031", "893042", "893034", "893032",     # EM
+    "893039",                                                       # Hanford Field Office
+    "893040",                                                       # Office of River Protection
+]
 
-with zipfile.ZipFile("../bulk_data_samples/doe_bulk_full.zip") as z:
-    csv_name = [n for n in z.namelist() if n.endswith(".csv")][0]
-    with z.open(csv_name) as f:
-        df = pd.read_csv(f, nrows=5)
+filtered = df[df["awarding_office_code"].isin(DOE_DEFENSE_OFFICE_CODES)]
 
-# print(len(df.columns))
-# print(df.columns.tolist())
-
-pd.Series(df.columns, name="column").to_csv("../bulk_data_samples/doe_bulk_full_columns.csv", index=False)
+print(filtered)
