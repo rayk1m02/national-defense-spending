@@ -52,7 +52,7 @@ DoD: {'name': 'Department of Defense', 'toptier_agency_id': 126, 'toptier_code':
 
 # list DOD sub-agencies and offices
 r1 = requests.get(f"https://api.usaspending.gov/api/v2/agency/{dod['toptier_code']}/sub_agency/", timeout=30)
-with open("../bulk_data_samples/dod_sub_agencies.json", "w", encoding="utf-8") as f:
+with open("../bulk_data_samples/json_dod_sub_agencies.json", "w", encoding="utf-8") as f:
     json.dump(r1.json(), f, indent=2)
 '''
 {
@@ -127,16 +127,16 @@ print(json.dumps(r2.json(), indent=2))
 
 # unzip and open generated dod bulk full data
 r3 = requests.get("https://files.usaspending.gov/award_data_archive/FY2024_097_Contracts_Full_20260906.zip", timeout=120)
-with open("../bulk_data_samples/dod_bulk_full.zip", "wb") as f:
+with open("../bulk_data_samples/zip_dod_bulk_full.zip", "wb") as f:
     f.write(r3.content)
 
-with zipfile.ZipFile("../bulk_data_samples/dod_bulk_full.zip") as z:
+with zipfile.ZipFile("../bulk_data_samples/zip_dod_bulk_full.zip") as z:
     csv_name = [n for n in z.namelist() if n.endswith(".csv")][0]
     with z.open(csv_name) as f:
         df = pd.read_csv(f, nrows=5)
 
-print(len(df.columns))
-print(df.columns.tolist())
+print(len(df.columns)) # 297
+pd.Series(df.columns, name="column").to_csv("../bulk_data_samples/csv_dod_bulk_full_columns.csv", index=False)
 '''
 contract_transaction_unique_key
 contract_award_unique_key
@@ -151,4 +151,3 @@ usaspending_permalink
 initial_report_date
 last_modified_date
 '''
-pd.Series(df.columns, name="column").to_csv("../bulk_data_samples/dod_bulk_full_columns.csv", index=False)
