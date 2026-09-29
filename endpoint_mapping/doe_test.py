@@ -2,107 +2,168 @@ import requests, time
 import json, zipfile
 import pandas as pd
 
-# scoping DOE sub-agencies
-# get real agency IDs
-# check if pre-generated files exist for DOE and if we can filter by office
-# figuring out DOE office codes
-
-### ----------------------------------------------------------------------------------------------------------------------------- ###
-
-# scoping DOE sub-agencies (we assume 089 is the National Nuclear Security Administration). 
-# we see that NNSA makes up about half of DOE's total spending. The rest are non-defense energy programs.
-r = requests.get("https://api.usaspending.gov/api/v2/agency/089/sub_agency/", timeout=30)
-print(r.status_code)
-print(json.dumps(r.json(), indent=2))
-
-### ----------------------------------------------------------------------------------------------------------------------------- ###
-
-# get real agency IDs
+# list all the agencies
 r = requests.post(
     "https://api.usaspending.gov/api/v2/bulk_download/list_agencies/",
     json={"type": "award_agencies"},
     timeout=30
 )
-print(r.status_code)
 agencies = r.json()
+print(json.dumps(agencies, indent=2))
+'''
+{
+  "agencies": {
+        "cfo_agencies": [                           # agencies under the Chief Financial Officers Act of 1990
+        {
+            "name": "Department of Commerce",
+            "toptier_agency_id": 15,                # USASpend internal surrogate key
+            "toptier_code": "013"                   # stable identifier
+        },
+        {
+            "name": "Department of Defense",
+            "toptier_agency_id": 126,             
+            "toptier_code": "097"                 
+        }, ...
+        ],
+        "other_agencies": [                         # agencies not on CFO Act list (smaller independent boards, commissions, offices)
+        {
+            "name": "Access Board",
+            "toptier_agency_id": 102,
+            "toptier_code": "310"
+        },
+        {
+            "name": "Administrative Conference of the U.S.",
+            "toptier_agency_id": 92,
+            "toptier_code": "302"
+        }, ...
+        ]
+    },
+    "sub_agencies": []                              # only populates when specific agency is requested in api parameter
+}
+'''
 
+# find DOE's toptier_code
 cfo = agencies["agencies"]["cfo_agencies"]
-doe = next(a for a in cfo if "Energy" in a["name"])     # next() pulls first item out of iterator, then raises StopIteration
-print("DOE:", doe)                                      # {'name': 'Department of Energy', 'toptier_agency_id': 78, 'toptier_code': '089'}
+doe = next(a for a in cfo if "Department of Energy" in a["name"])
+print("DoE:", doe)  
+'''
+DoE: {'name': 'Department of Energy', 'toptier_agency_id': 78, 'toptier_code': '089'}
+'''
 
-# see DOE's break down by sub-agency (how much is NNSA). This component mirros block 1, but we use and verify with the official agency identifier (toptier_code) here.
+# list DOE sub-agencies and offices
 r1 = requests.get(f"https://api.usaspending.gov/api/v2/agency/{doe['toptier_code']}/sub_agency/", timeout=30)
-print(r1.status_code)
-print(json.dumps(r1.json(), indent=2))
+with open("../bulk_data_samples/json_doe_sub_agencies.json", "w", encoding="utf-8") as f:
+    json.dump(r1.json(), f, indent=2)
+'''
+{
+  "toptier_code": "089",
+  "fiscal_year": 2026,
+  "page_metadata": {
+    ...
+    "hasPrevious": false
+  },
+  "results": [
+        {
+            "abbreviation": "DOE",
+            "name": "Department of Energy",
+            "total_obligations": 58274713926.8,
+            "transaction_count": 20350,
+            "new_award_count": 2425,
+            "children": [
+                {
+                "code": "892332",
+                "name": "NNSA MO CONTRACTING",
+                "total_obligations": 25632313666.86,
+                "transaction_count": 281,
+                "new_award_count": 0
+                },
+                {
+                "code": "892432",
+                "name": "IDAHO OPERATIONS OFFICE",
+                "total_obligations": 5840548305.36,
+                "transaction_count": 525,
+                "new_award_count": 130
+                },
+                ..
+            ]
+        },
+        {
+            "abbreviation": "FERC",
+            "name": "Federal Energy Regulatory Commission",
+            "total_obligations": 158560780.76,
+            "transaction_count": 483,
+            "new_award_count": 86,
+            "children": [
+                {
+                "code": "896030",
+                "name": "FEDERAL ENERGY REGULATORY COMM",
+                "total_obligations": 158560780.76,
+                "transaction_count": 483,
+                "new_award_count": 86
+                }
+            ]
+        }
+    ],
+  "messages": []
+}
+'''
 
-# check if DOE has pre-generated files and if we can filter by office
-# we cannot, as we infer (and confirmed separately in a temp file) from the api response structure that it only takes the fields agency_*, fiscal_year, and type, and does not allow for filtering by awarding_office-* (NNSA)
-# given that, we will need to use /api/v2/download/* instead of /api/v2/bulk_download/* for DOE data
+# check DOE bulk data
 r2 = requests.post(
     "https://api.usaspending.gov/api/v2/bulk_download/list_monthly_files/",
     json={"agency": doe["toptier_agency_id"], "fiscal_year": 2024, "type": "contracts"},
     timeout=30
 )
-print(r2.status_code)
 print(json.dumps(r2.json(), indent=2))
-
-### ----------------------------------------------------------------------------------------------------------------------------- ###
-
-# figuring out DOE office codes
-
-payload = {
-    "filters": {
-        "agencies": [{"type": "awarding", "tier": "toptier", "name": "Department of Energy"}],
-        "time_period": [{"start_date": "2024-01-01", "end_date": "2024-01-31"}],
+'''
+{
+  "monthly_files": [
+    {
+      "fiscal_year": 2024,
+      "agency_name": "Department of Energy",
+      "agency_acronym": "DOE",
+      "type": "contracts",
+      "updated_date": "2026-09-06",
+      "file_name": "FY2024_089_Contracts_Full_20260906.zip",
+      "url": "https://files.usaspending.gov/award_data_archive/FY2024_089_Contracts_Full_20260906.zip"
     },
-    "spending_level": ["transactions"],
-    "columns": []  # empty = all columns
+    {
+      "fiscal_year": null,
+      "agency_name": "Department of Energy",
+      "agency_acronym": "DOE",
+      "type": "contracts",
+      "updated_date": "2026-09-06",
+      "file_name": "FY(All)_089_Contracts_Delta_20260906.zip",
+      "url": "https://files.usaspending.gov/award_data_archive/FY(All)_089_Contracts_Delta_20260906.zip"
+    }
+  ]
 }
+'''
 
-r3 = requests.post("https://api.usaspending.gov/api/v2/download/search/", json=payload, timeout=30)
-result = r3.json()
-# print(r.status_code)
-print(json.dumps(result, indent=2))
+# unzip and open generated DOE bulk full data
+r3 = requests.get("https://files.usaspending.gov/award_data_archive/FY2024_089_Contracts_Full_20260906.zip", timeout=120)
+with open("../bulk_data_samples/zip_doe_bulk_full.zip", "wb") as f:
+    f.write(r3.content)
 
-status_url = result["status_url"]
+with zipfile.ZipFile("../bulk_data_samples/zip_doe_bulk_full.zip") as z:
+    csv_name = [n for n in z.namelist() if n.endswith(".csv")][0]
+    with z.open(csv_name) as f:
+        df = pd.read_csv(f, nrows=5)
 
-# we poll status_url to know when the background generation job completes so that we can download our file_url.
-while True:
-    r4 = requests.get(status_url, timeout=30)
-    data = r4.json()
-    if data.get("status") in ("finished", "failed"):
-        break
-    time.sleep(5)
+print(len(df.columns)) #297
+pd.Series(df.columns, name="column").to_csv("../bulk_data_samples/csv_doe_bulk_full_columns.csv", index=False)
+'''
+contract_transaction_unique_key
+contract_award_unique_key
+award_id_piid
+modification_number
+transaction_number
+parent_award_agency_id
+parent_award_agency_name
+parent_award_id_piid
+parent_award_modification_number
+federal_action_obligation
+total_dollars_obligated
+...
 
-# grab the generated zip
-# note: the status response (data) also contains file_url, and it matches result["file_url"]
-r5 = requests.get(data["file_url"], timeout=60)
-with open("doe_test.zip", "wb") as f:   # wb (write binary)
-    f.write(r5.content)                 # save those bytes to disk
-
-# open zip without manual extraction
-with zipfile.ZipFile("doe_test.zip") as z:
-    print(z.namelist())                 # what files are inside (should be one csv, so confirming the name)
-    csv_name = z.namelist()[0]          # grab the file
-    with z.open(csv_name) as f:         # open csv in memory
-        df = pd.read_csv(f)
-
-for i, col in enumerate(df.columns):
-    print(i, col)
-
-print(df["awarding_sub_agency_name"].unique())
-print(df["awarding_office_name"].nunique())
-for name in sorted(df["awarding_office_name"].unique()):
-    print(name)
-
-office_map = df[["awarding_office_code", "awarding_office_name"]].drop_duplicates().sort_values("awarding_office_name")
-print(office_map.to_string(index=False))
-
-DOE_DEFENSE_OFFICE_CODES = [
-    "892332", "892330", "892331",                                   # NNSA
-    "893033", "893035", "893031", "893042", "893034", "893032",     # EM
-    "893039",                                                       # Hanford Field Office
-    "893040",                                                       # Office of River Protection
-]
-
-filtered = df[df["awarding_office_code"].isin(DOE_DEFENSE_OFFICE_CODES)]
+'''
