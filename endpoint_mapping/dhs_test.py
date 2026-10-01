@@ -125,3 +125,122 @@ print(json.dumps(r.json(), indent=2))
 
 # account_number field here mirrors the federal_accounts_funding_this_award column values from api/v2/bulk_download
 DHS_CISA_ACCOUNTS = {"070-0412", "070-0805", "070-0565", "070-1911"}
+
+# check DHS bulk data (toptier_agency_id 63, toptier_code 070)
+dhs_bulk_monthly = requests.post(
+    "https://api.usaspending.gov/api/v2/bulk_download/list_monthly_files/",
+    json={"agency": "63", "fiscal_year": 2024, "type": "contracts"},
+    timeout=120
+)
+print(json.dumps(dhs_bulk_monthly.json(), indent=2))
+'''
+{
+  "monthly_files": [
+    {
+      "fiscal_year": 2024,
+      "agency_name": "Department of Homeland Security",
+      "agency_acronym": "DHS",
+      "type": "contracts",
+      "updated_date": "2026-09-06",
+      "file_name": "FY2024_070_Contracts_Full_20260906.zip",
+      "url": "https://files.usaspending.gov/award_data_archive/FY2024_070_Contracts_Full_20260906.zip"
+    }
+  ]
+}
+'''
+
+# unzip and open generated DHS bulk full data
+dhs_full_r = requests.get(dhs_bulk_monthly.json()["monthly_files"][0]["url"], timeout=120)
+with open("../bulk_data_samples/zip_dhs_bulk_full.zip", "wb") as f:
+    f.write(dhs_full_r.content)
+
+with zipfile.ZipFile("../bulk_data_samples/zip_dhs_bulk_full.zip") as z:
+    csv_names = [n for n in z.namelist() if n.endswith(".csv")]                                             # grab every csv file
+    df_dhs = pd.concat((pd.read_csv(z.open(n), low_memory=False) for n in csv_names), ignore_index=True)    # concatenate into one dataframe
+print(len(df_dhs.columns)) # 297
+
+def funded_by(value, target_accounts):
+    if pd.isna(value):
+        return False
+    tokens = [t.strip() for t in value.split(";")]     # tokens will be a clean list of federal accounts
+    return any(t in target_accounts for t in tokens)   # any() - eg. an award funded by three accounts, only one of which is CISA, will still count  
+
+# boolean masking - keep only rows where we have a DHS-CISA federal account as a value
+dhs_filtered = df_dhs[df_dhs["federal_accounts_funding_this_award"].apply(lambda v: funded_by(v, DHS_CISA_ACCOUNTS))]
+print(len(dhs_filtered)) # 86 (transactions)
+print(dhs_filtered[["awarding_agency_name", "funding_agency_name", "federal_action_obligation", "federal_accounts_funding_this_award",]].head())
+'''
+                 awarding_agency_name              funding_agency_name  federal_action_obligation federal_accounts_funding_this_award
+30    Department of Homeland Security  Department of Homeland Security                  653992.11                   070-0412;070-0566
+143   Department of Homeland Security  Department of Homeland Security                       0.00                   070-0412;070-0566
+1214  Department of Homeland Security  Department of Homeland Security                 6789567.84                   070-0412;070-0566
+1968  Department of Homeland Security  Department of Homeland Security                 8501011.13                   070-0412;070-0566
+2030  Department of Homeland Security  Department of Homeland Security                 6324000.11                   070-0412;070-0566
+'''
+print(dhs_filtered["federal_action_obligation"].sum()) # 153241262.32 (~153M)
+print(dhs_filtered.groupby(["awarding_agency_name", "funding_agency_name"]).size()) # within DHS bulk file, every CISA contract is funded by DHS
+'''
+awarding_agency_name             funding_agency_name            
+Department of Homeland Security  Department of Homeland Security    86
+dtype: int64
+'''
+
+# verifying the broader claim that no other agency awarded a CISA-funded contract in FY2024. 
+# we used the /download/search API to confirm and it returned identical results.
+# this method took ~6 minutes to generate the file, so we will use the bulk file API for our project extraction. 
+# code kept for documentation purposes.
+'''
+payload = {
+    "filters": {
+        "agencies": [{"type": "funding", "tier": "toptier", "name": "Department of Homeland Security"}],
+        "award_type_codes": ["A", "B", "C", "D", "IDV_A", "IDV_B", "IDV_B_A", "IDV_B_B", "IDV_B_C", "IDV_C", "IDV_D", "IDV_E"],
+        "time_period": [{"start_date": "2023-10-01", "end_date": "2024-09-30"}]
+    },
+    "spending_level": ["transactions"],
+    "columns": []
+}
+
+r3 = requests.post("https://api.usaspending.gov/api/v2/download/search/", json=payload, timeout=30)
+result = r3.json()
+print(json.dumps(result, indent=2))
+
+while True:
+    r4 = requests.get(result["status_url"], timeout=30)
+    data = r4.json()
+    if data.get("status") in ("finished", "failed"):
+        break
+    time.sleep(5)
+print(json.dumps(data, indent=2))
+
+r5 = requests.get(data["file_url"], timeout=600)
+with open("../bulk_data_samples/zip_dhs_download.zip", "wb") as f:
+    f.write(r5.content)
+
+with zipfile.ZipFile("../bulk_data_samples/zip_dhs_download.zip") as z:
+    csv_names = [n for n in z.namelist() if n.endswith(".csv")]
+    df = pd.concat((pd.read_csv(z.open(n), low_memory=False) for n in csv_names), ignore_index=True)
+
+print(len(df)) # 62753
+
+df_filtered = df[df["federal_accounts_funding_this_award"].apply(lambda v: funded_by(v, DHS_CISA_ACCOUNTS))]
+
+print(len(df_filtered)) # 86
+print(df_filtered["federal_action_obligation"].sum()) # 153241262.32
+print(df_filtered.groupby(["awarding_agency_name", "funding_agency_name"]).size())
+'''
+'''
+awarding_agency_name             funding_agency_name            
+Department of Homeland Security  Department of Homeland Security    86
+dtype: int64
+'''
+'''
+	                    Bulk file (awarding = DHS)	    Custom download (funding = DHS)
+DHS-CISA Rows	                86	                            86
+Obligations	                    $153,241,262.32	                $153,241,262.32
+
+* our DOT script verifies that bulk_downloads agency parameter is filetered by awarding agency.
+
+The /download/search API caught every contract funded by DHS, no matter who awarded it, and it found the same 86 rows. 
+So no other agency awarded CISA-funded contracts in FY2024.
+These are contract totals, meaning the remaining $357M gap is non-contract related spend.
+'''
