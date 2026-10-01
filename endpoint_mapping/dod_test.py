@@ -125,8 +125,8 @@ print(json.dumps(r2.json(), indent=2))
 }
 '''
 
-# unzip and open generated dod bulk full data
-r3 = requests.get("https://files.usaspending.gov/award_data_archive/FY2024_097_Contracts_Full_20260906.zip", timeout=120)
+# unzip and open generated DOD bulk full data
+r3 = requests.get(r2.json()["monthly_files"][0]["url"], timeout=120)
 with open("../bulk_data_samples/zip_dod_bulk_full.zip", "wb") as f:
     f.write(r3.content)
 
