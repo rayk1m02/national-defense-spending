@@ -4,7 +4,7 @@ import zipfile
 
 # DRA - Defense Related Activites (budget subfunction 054)
 
-# list out the agencies under budget function 054 and their spend for the given fiscal year
+# list out the agencies under budget subfunction 054 and their spend
 r = requests.post(
     "https://api.usaspending.gov/api/v2/spending/",
     json={"type": "agency", "filters": {"fy": "2024", "quarter": 4, "budget_subfunction": "054"}},
