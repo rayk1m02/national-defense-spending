@@ -1,2 +1,12 @@
+# Python
 venv/
+__pycache__/
+
+# Local data
 bulk_data_samples/
+
+# Confidential
+.env
+.env.*
+!.env.example
+*.pem
