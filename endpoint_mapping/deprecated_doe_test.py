@@ -84,11 +84,11 @@ while True:
 # grab the generated zip
 # note: the status response (data) also contains file_url, and it matches result["file_url"]
 r5 = requests.get(data["file_url"], timeout=60)
-with open("../bulk_data_samples/zip_doe_download.zip", "wb") as f:      # wb (write binary)
+with open("../bulk_data_samples/zip_2024_doe_download.zip", "wb") as f:      # wb (write binary)
     f.write(r5.content)                                                 # save those bytes to disk
 
 # open zip without manual extraction
-with zipfile.ZipFile("../bulk_data_samples/zip_doe_download.zip") as z:
+with zipfile.ZipFile("../bulk_data_samples/zip_2024_doe_download.zip") as z:
     print(z.namelist())                                                     # what files are inside
     # ['Contracts_PrimeTransactions_2026-09-29_H04M23S36_1.csv', 'Assistance_PrimeTransactions_2026-09-29_H04M24S33_1.csv']
     csv_name = z.namelist()[0]                                              # grab the file

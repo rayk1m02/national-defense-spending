@@ -142,16 +142,16 @@ print(json.dumps(r2.json(), indent=2))
 
 # unzip and open generated DOE bulk full data
 r3 = requests.get(r2.json()["monthly_files"][0]["url"], timeout=120)
-with open("../bulk_data_samples/zip_doe_bulk_full.zip", "wb") as f:
+with open("../bulk_data_samples/zip_2024_doe_bulk_full.zip", "wb") as f:
     f.write(r3.content)
 
-with zipfile.ZipFile("../bulk_data_samples/zip_doe_bulk_full.zip") as z:
+with zipfile.ZipFile("../bulk_data_samples/zip_2024_doe_bulk_full.zip") as z:
     csv_name = [n for n in z.namelist() if n.endswith(".csv")][0]
     with z.open(csv_name) as f:
         df = pd.read_csv(f, nrows=5)
 
 print(len(df.columns)) #297
-pd.Series(df.columns, name="column").to_csv("../bulk_data_samples/csv_doe_bulk_full_columns.csv", index=False)
+pd.Series(df.columns, name="column").to_csv("../bulk_data_samples/csv_2024_doe_bulk_full_columns.csv", index=False)
 '''
 contract_transaction_unique_key
 contract_award_unique_key

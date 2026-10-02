@@ -30,7 +30,7 @@ Countering Weapons of Mass Destruction
 '''
 
 # since the sub-agency list does not include DHS-CISA (which is a federal account), we will use dod_bulk_full.zip as a means to check if there is a federal account column for us to filter by for DHS-CISA values
-with zipfile.ZipFile(r"C:\Users\rkim\Desktop\Learning\national-defense-spending\bulk_data_samples\zip_dod_bulk_full.zip") as z:
+with zipfile.ZipFile(r"C:\Users\rkim\Desktop\Learning\national-defense-spending\bulk_data_samples\zip_2024_dod_bulk_full.zip") as z:
     with z.open(z.namelist()[0]) as f:
         df = pd.read_csv(f, nrows=5)
 matches = [c for c in df.columns if "treasury" in c.lower() or "federal_account" in c.lower()]
@@ -40,7 +40,7 @@ print(matches)
 '''
 
 # find the format those values come in
-with zipfile.ZipFile(r"C:\Users\rkim\Desktop\Learning\national-defense-spending\bulk_data_samples\zip_dod_bulk_full.zip") as z:
+with zipfile.ZipFile(r"C:\Users\rkim\Desktop\Learning\national-defense-spending\bulk_data_samples\zip_2024_dod_bulk_full.zip") as z:
     with z.open(z.namelist()[0]) as f:
         df = pd.read_csv(f, usecols=["treasury_accounts_funding_this_award", "federal_accounts_funding_this_award"], nrows=20)
 for val in df["treasury_accounts_funding_this_award"].dropna().unique()[:10]:
@@ -154,7 +154,7 @@ dhs_full_r = requests.get(dhs_bulk_monthly.json()["monthly_files"][0]["url"], ti
 with open("../bulk_data_samples/zip_dhs_bulk_full.zip", "wb") as f:
     f.write(dhs_full_r.content)
 
-with zipfile.ZipFile("../bulk_data_samples/zip_dhs_bulk_full.zip") as z:
+with zipfile.ZipFile("../bulk_data_samples/zip_2024_dhs_bulk_full.zip") as z:
     csv_names = [n for n in z.namelist() if n.endswith(".csv")]                                             # grab every csv file
     df_dhs = pd.concat((pd.read_csv(z.open(n), low_memory=False) for n in csv_names), ignore_index=True)    # concatenate into one dataframe
 print(len(df_dhs.columns)) # 297
@@ -213,10 +213,10 @@ while True:
 print(json.dumps(data, indent=2))
 
 r5 = requests.get(data["file_url"], timeout=600)
-with open("../bulk_data_samples/zip_dhs_download.zip", "wb") as f:
+with open("../bulk_data_samples/zip_2024_dhs_download.zip", "wb") as f:
     f.write(r5.content)
 
-with zipfile.ZipFile("../bulk_data_samples/zip_dhs_download.zip") as z:
+with zipfile.ZipFile("../bulk_data_samples/zip_2024_dhs_download.zip") as z:
     csv_names = [n for n in z.namelist() if n.endswith(".csv")]
     df = pd.concat((pd.read_csv(z.open(n), low_memory=False) for n in csv_names), ignore_index=True)
 

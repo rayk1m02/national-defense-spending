@@ -93,10 +93,10 @@ print(json.dumps(dot_bulk_monthly.json(), indent=2))
 
 # unzip and open generated DOT bulk full data
 dot_full_r = requests.get(dot_bulk_monthly.json()["monthly_files"][0]["url"], timeout=600)
-with open("../bulk_data_samples/zip_dot_bulk_full.zip", "wb") as f:
+with open("../bulk_data_samples/zip_2024_dot_bulk_full.zip", "wb") as f:
     f.write(dot_full_r.content)
 
-with zipfile.ZipFile("../bulk_data_samples/zip_dot_bulk_full.zip") as z:
+with zipfile.ZipFile("../bulk_data_samples/zip_2024_dot_bulk_full.zip") as z:
     csv_names = [n for n in z.namelist() if n.endswith(".csv")]
     df_dot = pd.concat((pd.read_csv(z.open(n), low_memory=False) for n in csv_names), ignore_index=True)
 print(len(df_dot.columns)) # 297
@@ -143,7 +143,7 @@ for acct in sorted(DOT_MARAD_ACCOUNTS):
 '''
 # Only Ready Reserve Force (069-1710) produces Contracts/IDV activity, the other three accounts are subsidy programs
 
-with zipfile.ZipFile("../bulk_data_samples/zip_dot_bulk_full.zip") as z:
+with zipfile.ZipFile("../bulk_data_samples/zip_2024_dot_bulk_full.zip") as z:
     csv_names = [n for n in z.namelist() if n.endswith(".csv")]
     df_dot_check = pd.concat(
         (pd.read_csv(z.open(n), usecols=["awarding_agency_name", "funding_agency_name"]) for n in csv_names),
