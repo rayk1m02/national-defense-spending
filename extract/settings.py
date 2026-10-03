@@ -12,3 +12,5 @@ AWS_PROFILE = os.environ.get("AWS_PROFILE", f"nds-extract-{ENV}")
 
 RAW_PREFIX = "raw"
 PRESTAGED_PREFIX = "prestaged"
+
+DOWNLOAD_DIR = os.environ.get("NDS_DOWNLOAD_DIR", "downloads")
