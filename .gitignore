@@ -4,6 +4,7 @@ __pycache__/
 
 # Local data
 bulk_data_samples/
+downloads/
 
 # Confidential
 .env
