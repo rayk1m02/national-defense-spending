@@ -9,7 +9,8 @@
                 "s3:AbortMultipartUpload"
             ],
             "Resource": [
-                "arn:aws:s3:::national-defense-spending-dev-381492047455-us-east-1-an/raw/*"
+                "arn:aws:s3:::national-defense-spending-dev-381492047455-us-east-1-an/raw/*",
+                "arn:aws:s3:::national-defense-spending-dev-381492047455-us-east-1-an/prestaged/*"
             ]
         },
         {
@@ -23,7 +24,7 @@
             ],
             "Condition": {
                 "StringLike": {
-                    "s3:prefix": ["raw/*"]
+                    "s3:prefix": ["raw/*", "prestaged/*"]
                 }
             }
         }
