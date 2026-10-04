@@ -8,16 +8,16 @@ def get_client():
 
 # based on the file, it returns its S3 address
 # prefix - raw/prestaged
-# source_name - agency_acronym
+# source_name - SOURCES key (dod, doe, ...)
 # file - monthly_files[]
-# filename- FYXXX_XXX_Contracts_Full_XXXXXXXX.zip
+# filename- FYXXX_XXX_Contracts_Full_XXXXXXXX.zip (if zip not prestaged)
 # # raw/dod/full/fiscal_year=2025/FY2025_097_Contracts_Full_20260906.zip
 def build_key(prefix, source_name, file, filename): 
     if file["fiscal_year"] is None:
         partition = f"delta/load_date={file['updated_date']}"
     else:
-        partition = f"full/fiscal_year={file['updated_date']}"
-    return f"{prefix}/{source_name}/partition/{filename}"
+        partition = f"full/fiscal_year={file['fiscal_year']}"
+    return f"{prefix}/{source_name}/{partition}/{filename}"
 
 # does this file already exist
 def exists(client, key):
