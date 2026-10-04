@@ -21,7 +21,7 @@ Region: us-east-1. All resources tagged `Project=national-defense-spending` and 
 
 ```
 raw/<source>/full/fiscal_year=<YYYY>/
-raw/<source>/delta/load_date=<YYYY-MM-DD>/
+raw/<source>/delta/load_date=<YYYY-MM-DD>/ # USASpending generation date (updated_date)
 ```
 `prestaged/` mirrors the same layout. DHS has no Delta files.
 
