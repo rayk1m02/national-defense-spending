@@ -11,7 +11,7 @@ SOURCES = {
         "has_delta_file": True,
         "filter": {
             "column": "awarding_office_code",
-            "match": "exact",
+            "match": "exact",                                                   # cell holds one value
             "values": [
                 "892332", "892330", "892331",                                   # NNSA (National Nuclear Security Administration)
                 "893033", "893035", "893031", "893042", "893034", "893032",     # EM (Environmental Management)
@@ -26,7 +26,7 @@ SOURCES = {
         "has_delta_file": False,
         "filter": {
             "column": "federal_accounts_funding_this_award",
-            "match": "any_token",
+            "match": "any_token",                                       # cell can hold several values separated by ";"
             "values": [
                 "070-0412", "070-0805", "070-0565", "070-1911"          # CISA (Cybersecurity and Infrastructure Security Agency)
             ]
