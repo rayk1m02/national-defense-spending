@@ -39,4 +39,5 @@ def run_extract(fiscal_years, source_names=None):
             os.remove(csv_path)
 
 logging.basicConfig(level=logging.INFO)
-run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1))
+# run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1))
+run_extract(range(2025, 2026), source_names=["doe"])
