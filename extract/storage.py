@@ -19,11 +19,16 @@ def build_key(prefix, source_name, file, filename):
         partition = f"full/fiscal_year={file['fiscal_year']}"
     return f"{prefix}/{source_name}/{partition}/{filename}"
 
+# put the local file at that address
+def upload(client, local_path, key):
+    client.upload_file(local_path, settings.BUCKET, key)
+
 # does this file already exist
 def exists(client, key):
     resp = client.list_objects_v2(Bucket=settings.BUCKET, Prefix=key)
     return any(obj["Key"] == key for obj in resp.get("Contents", []))
 
-# put the local file at that address
-def upload(client, local_path, key):
-    client.upload_file(local_path, settings.BUCKET, key)
+# check whether a partition has objects
+def has_objects(client, prefix):
+    resp = client.list_objects_v2(Bucket=settings.BUCKET, Prefix=prefix, MaxKeys=1)
+    return resp.get("KeyCount", 0) > 0
