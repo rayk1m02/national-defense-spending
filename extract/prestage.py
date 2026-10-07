@@ -1,6 +1,7 @@
 import zipfile
 import pandas as pd
 from extract.columns import COLUMNS, DELTA_ONLY_COLUMNS
+from extract.settings import FIRST_FISCAL_YEAR
 
 def filter_mask(df, flt):
     col = df[flt["column"]]
@@ -31,6 +32,9 @@ def prestage(zip_path, source):
 
             if source["filter"] is not None:
                 df = df[filter_mask(df, source["filter"])]
+
+            fy = pd.to_numeric(df["action_date_fiscal_year"])
+            df = df[fy.isna() | (fy >= FIRST_FISCAL_YEAR)]
 
             df = df.reindex(columns=COLUMNS) # returns df with exactly each COLUMNS in order, listed COLUMNS that DNE filled with NaN
             df.to_csv(csv_path, mode="w" if i == 0 else "a", header=(i == 0), index=False) # "w" creates file, "a" appends, only first part gets column header, no row pandas row index
