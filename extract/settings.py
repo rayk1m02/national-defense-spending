@@ -15,4 +15,4 @@ PRESTAGED_PREFIX = "prestaged"
 
 DOWNLOAD_DIR = os.environ.get("NDS_DOWNLOAD_DIR", "downloads")
 
-FIRST_FISCAL_YEAR = 2008
+FIRST_FISCAL_YEAR = 2017
