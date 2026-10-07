@@ -1,4 +1,4 @@
-import datetime
+import datetime, time
 import logging
 import os
 import requests
@@ -13,14 +13,22 @@ def current_fiscal_year():
     today = datetime.date.today()
     return today.year + 1 if today.month >= 10 else today.year
 
-def list_monthly_files(agency_id, fiscal_year):
-    r = requests.post(
-        LIST_URL,
-        json={"agency": agency_id, "fiscal_year": fiscal_year, "type": "contracts"},
-        timeout=30
-    )
-    r.raise_for_status()
-    return r.json()["monthly_files"]
+def list_monthly_files(agency_id, fiscal_year, attempts=5):
+    for attempt in range(1, attempts+1):
+        try:
+            r = requests.post(
+                LIST_URL,
+                json={"agency": agency_id, "fiscal_year": fiscal_year, "type": "contracts"},
+                timeout=30
+            )
+            r.raise_for_status()
+            return r.json()["monthly_files"]
+        except requests.exceptions.RequestException as e:
+            status = getattr(e.response, "status_code", None)
+            if (status is not None and status < 500) or attempt == attempts:
+                raise
+            logger.warning("List request failed (%s), retry %s of %s", e, attempt, attempts - 1)
+            time.sleep(60 * attempt)
 
 def select_monthly_files(source, fiscal_years):
     full_files = [] # full file per fiscal year
@@ -56,15 +64,24 @@ def select_monthly_files(source, fiscal_years):
 
     return full_files, list(delta_files.values())
 
-def download_monthly_files(url, dest):
+def download_monthly_files(url, dest, attempts=5):
     os.makedirs(os.path.dirname(dest), exist_ok=True)           # creates a folder based on the folder part of dest path
     tmp_path = dest + ".part"                                   # append path (since we process in chunks - temporary name)
 
-    with requests.get(url, stream=True, timeout=120) as r:
-        r.raise_for_status()
-        with open(tmp_path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=8 * 1024 * 1024):
-                f.write(chunk)
+    for attempt in range(1, attempts+1):
+        try: 
+            with requests.get(url, stream=True, timeout=120) as r:
+                r.raise_for_status()
+                with open(tmp_path, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=8 * 1024 * 1024):
+                        f.write(chunk)
+            break
+        except requests.exceptions.RequestException as e:
+            status = getattr(e.response, "status_code", None)
+            if (status is not None and status < 500) or (attempt == attempts):
+                raise
+            logger.warning("Download failed (%s), retry %s of %s", e, attempt, attempts-1)
+            time.sleep(60 * attempt)
 
     os.replace(tmp_path, dest)
     return dest
