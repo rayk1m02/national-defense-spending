@@ -23,7 +23,7 @@ Region: us-east-1. All resources tagged `Project=national-defense-spending` and 
 raw/<source>/full/fiscal_year=<YYYY>/
 raw/<source>/delta/load_date=<YYYY-MM-DD>/ # USASpending generation date (updated_date)
 ```
-`prestaged/` mirrors the same layout. DHS has no Delta files.
+`prestaged/` mirrors the same layout. DHS has no Delta files so far
 
 ### Verification commands
 
@@ -47,3 +47,28 @@ Policy versions: v1 (2026-10-02, `raw/` only), v2 (2026-10-03, added `prestaged/
 ```bash
 aws iam list-policy-versions --policy-arn arn:aws:iam::381492047455:policy/nds-extract-dev-policy --no-cli-pager
 ```
+
+`nds-redshift-copy-dev` role, assumed by Redshift, policy `nds-redshift-copy-dev-policy` (`aws/iam/redshift-copy-dev-policy.json`):
+- `s3:GetObject` on `prestaged/*` (dev bucket)
+- `s3:ListBucket` limited to `prestaged/*`
+- No write access, no `raw/`, no prod
+
+## Redshift Serverless
+
+| Setting               | Value                                                     |
+|-----------------------|-----------------------------------------------------------|
+| Namespace             | `nds-dev`                                                 |
+| Workgroup             | `nds-dev-wg`                                              |
+| Database              | `nds`                                                     |
+| Admin user            | `nds_admin` (password in AWS Secret Manager)              |
+| Base capacity         | 4 RPU                                                     |
+| Usage limit           | 40 RPU-hours monthly, turn off user queries               |
+| Encryption            | AWS-owned key                                             |
+| Enhanced VPC routing  | Off                                                       |
+| Publicly accessible   | On                                                        |
+| Security group        | `nds-redshift-dev-sg`: inbound TCP 5439 from my IP only   |
+| Default IAM role      | `nds-redshift-copy-dev`                                   |
+
+Endpoint: `nds-dev-wg.381492047455.us-east-1.redshift-serverless.amazonaws.com:5439`
+
+If my IP changes, update the inbound rule on `nds-redshift-dev-sg`.
