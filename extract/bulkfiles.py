@@ -41,9 +41,7 @@ def select_monthly_files(source, fiscal_years):
         if len(full) == 1:
             full_files.append(full[0])
         elif len(full) > 1:
-            raise ValueError(
-                f"Multiple full files for {source['agency_id']} {fiscal_year}, {len(full)}: {[f['file_name'] for f in full]}"
-            )
+            raise ValueError(f"Multiple full files for {source['agency_id']} {fiscal_year}, {len(full)}: {[f['file_name'] for f in full]}")
         elif fiscal_year == current_fiscal_year():
             logger.warning("No full file for current fiscal year, skipping: %s %s", source["agency_id"], fiscal_year,)
         else:
