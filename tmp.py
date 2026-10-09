@@ -8,40 +8,19 @@ from extract.columns import COLUMNS
 from extract.bulkfiles import list_monthly_files, download_monthly_files
 from extract.prestage import filter_mask
 
-CHECKS = [
-    # ("dhs", 2024, "bulk_data_samples/zip_2024_dhs_bulk_full.zip"),
-    # ("dot", 2024, "bulk_data_samples/zip_2024_dot_bulk_full.zip"),
-    # ("dhs", 2018, None),
-    # ("dot", 2017, None),
-    # ("dot", 2018, None),
-    ("dhs", 2017, None),
-]
+'''
+pd.read_csv(path, dtype=str, chunksize=500_000) returns an iterator of DataFrames. You loop over it with for chunk in ....
 
-for name, fy, local_zip in CHECKS:
-    source = SOURCES[name]
-    col = source["filter"]["column"]
+chunk.apply(lambda s: s.str.encode('utf-8').str.len().max()) runs that expression on each column (apply on a DataFrame passes one column Series at a time) and returns a Series of max lengths indexed by column name.
 
-    if local_zip:
-        zip_path = local_zip
-    else:
-        url = "https://files.usaspending.gov/award_data_archive/FY2017_070_Contracts_Full_20260906.zip"
-        zip_path = download_monthly_files(url, os.path.join("bulk_data_samples", "FY2017_070_Contracts_Full_20260906.zip"))
+Append each chunk’s result to a list, then pd.concat(results, axis=1).max(axis=1) lines them up side by side (axis=1 = as columns) and takes the max across chunks for each row (each original column).
+'''
 
-    with zipfile.ZipFile(zip_path) as z:
-        csv_names = [n for n in z.namelist() if n.endswith(".csv")]
-        df = pd.concat(
-            (pd.read_csv(z.open(n), dtype=str, usecols=[col, "federal_action_obligation", "award_or_idv_flag"])
-             for n in csv_names),
-            ignore_index=True,
-        )
-
-    blank = df[col].isna()
-    obl = pd.to_numeric(df["federal_action_obligation"]).fillna(0)
-    matched = filter_mask(df, source["filter"])
-
-    print(f"\n{name} {fy}: rows={len(df)} matched={matched.sum()}")
-    print(f"  blank rows={blank.mean():.3f}  blank dollars={obl[blank].abs().sum() / obl.abs().sum():.3f}")
-    print(df.loc[blank, "award_or_idv_flag"].value_counts().to_string())
-
-    if not local_zip:
-        os.remove(zip_path)
+df_itr = pd.read_csv(r"downloads\dod\FY2017_097_Contracts_Full_20260906.csv", dtype=str, chunksize=500_000)
+chunk_maxes = []
+for chunk in df_itr:
+    chunk_maxes.append(chunk.apply(lambda s: s.dropna().astype(str).str.encode('utf-8').str.len().max()))  
+    # print(chunk[chunk["funding_agency_code"].str.len() > 3]["funding_agency_code"].unique())
+# max_bytes = pd.concat(chunk_maxes, axis=1).max(axis=1) 
+#max_bytes.to_csv("load/max_bytes.csv", index_label="column", header=["max_bytes"])
+# print(max_bytes.sort_values(ascending=False).to_string())
