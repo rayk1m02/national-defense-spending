@@ -12,3 +12,6 @@ downloads/
 .env.*
 !.env.example
 *.pem
+
+# Other
+test.sql
