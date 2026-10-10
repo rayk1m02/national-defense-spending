@@ -1,5 +1,6 @@
 import boto3
 from extract import settings
+from extract.settings import BUCKET
 
 # to communicate to S3 using nds-extract-dev
 def get_client():
@@ -32,3 +33,12 @@ def exists(client, key):
 def has_objects(client, prefix):
     resp = client.list_objects_v2(Bucket=settings.BUCKET, Prefix=prefix, MaxKeys=1)
     return resp.get("KeyCount", 0) > 0
+
+# return every key under a prefix
+def list_keys(client, prefix):
+    paginator = client.get_paginator("list_objects_v2")
+    keys = []
+    for page in paginator.paginate(Bucket=BUCKET, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            keys.append(obj["Key"])
+    return keys
