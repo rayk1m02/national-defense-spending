@@ -30,3 +30,14 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   nds:
+    staging:
+      +schema: stg_nds
+      +materialized: table
+    intermediate:
+      +schema: int_nds
+    marts:
+      +schema: marts_nds
+
+seeds:
+  nds:
+    +schema: ref_nds
