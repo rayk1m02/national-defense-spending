@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw_nds
+    schema: raw_nds
+    tables:
+      - name: contract_transactions
+        columns:
+          - name: contract_transaction_unique_key
+            data_tests:
+              - not_null
