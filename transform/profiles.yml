@@ -8,5 +8,5 @@ nds:
       dbname: "{{ env_var('NDS_REDSHIFT_DATABASE') }}"
       user: "{{ env_var('NDS_REDSHIFT_USER') }}"
       password: "{{ env_var('NDS_REDSHIFT_PASSWORD') }}"
-      schema: dbt_dev
+      schema: default_nds
       threads: 4
