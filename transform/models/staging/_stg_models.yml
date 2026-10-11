@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: stg_contract_transactions
+    columns:
+      - name: contract_transaction_unique_key
+        data_tests:
+          - unique
+          - not_null
