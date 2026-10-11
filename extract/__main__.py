@@ -8,7 +8,7 @@ from extract.settings import DOWNLOAD_DIR, FIRST_FISCAL_YEAR
 from extract.sources import SOURCES
 
 def is_loaded(client, name, file, raw_key, prestaged_key):
-    if file["fiscal_year"] is None:                                                                                                     # delta (each month's is new data)
+    if file["fiscal_year"] is None:                                                                                                     # delta (each month's new data)
         return exists(client, raw_key) and exists(client, prestaged_key)
     return (has_objects(client, build_key("raw", name, file, "")) and has_objects(client, build_key("prestaged", name, file, "")))      # full (one file per fiscal year)
 

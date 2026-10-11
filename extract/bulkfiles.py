@@ -3,7 +3,7 @@ import logging
 import os
 import requests
 
-# date range for this project will be October 1, 2007 to Present. (USAspending API goes back to FY 2008)
+# date range for this project will be October 1, 2017 to Present. (USAspending API goes back to FY 2008, but DATA ACT implemented into USAspending in May 2017)
 
 logger = logging.getLogger(__name__)
 
