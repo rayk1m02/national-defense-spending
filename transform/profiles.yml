@@ -1,0 +1,12 @@
+nds:
+  target: dev
+  outputs:
+    dev:
+      type: redshift
+      host: "{{ env_var('NDS_REDSHIFT_HOST') }}"
+      port: "{{ env_var('NDS_REDSHIFT_PORT') | as_number }}"
+      dbname: "{{ env_var('NDS_REDSHIFT_DATABASE') }}"
+      user: "{{ env_var('NDS_REDSHIFT_USER') }}"
+      password: "{{ env_var('NDS_REDSHIFT_PASSWORD') }}"
+      schema: dbt_dev
+      threads: 4
