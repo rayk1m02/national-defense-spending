@@ -10,7 +10,7 @@ with spine as (
 )
 
 select 
-    date_day,
+    cast(date_day as date) as date_day,
     case
         when extract(month from date_day) >= 10 then extract(year from date_day)+1
         else extract(year from date_day)
