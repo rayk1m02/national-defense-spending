@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: dim_product
-    description: One row per NAISC + PSC combination
+    description: One row per NAICS + PSC combination
     columns:
       - name: product_key
         description: Surrogate key, hash of naics_code and product_or_service_code
@@ -23,3 +23,21 @@ models:
           - accepted_values:
               arguments:
                 values: ['R&D', 'Supplies/Equipment', 'Construction', 'Services']
+  - name: dim_location
+    description: One row per place of performance (country, state, county, city)
+    columns:
+      - name: location_key
+        description: Surrogate key, hash of country, state code, county, and city
+        data_tests:
+          - unique
+          - not_null
+      - name: primary_place_of_performance_country_name
+        description: Country where the work is performed.
+      - name: primary_place_of_performance_state_code
+        description: 2 letter state or territory code where the work is performed. Null for most foreign locations.
+      - name: primary_place_of_performance_state_name
+        description: State or territory name, most recent spelling per code.
+      - name: primary_place_of_performance_county_name
+        description: County where the work is performed.
+      - name: primary_place_of_performance_city_name
+        description: City where the work is performed.
