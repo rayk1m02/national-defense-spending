@@ -109,6 +109,8 @@ cleaned as (
 
 ),
 
+-- keep the latest version of each transaction
+-- Full and Delta files share a timestamp, so prioritize Delta row just for rerun consistency
 deduped as (
 
     select *
