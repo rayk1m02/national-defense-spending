@@ -2,8 +2,24 @@ version: 2
 
 models:
   - name: dim_product
+    description: One row per NAISC + PSC combination
     columns:
       - name: product_key
+        description: Surrogate key, hash of naics_code and product_or_service_code
         data_tests:
           - unique
           - not_null
+      - name: naics_code
+        description: 6 digit North American Industry Classification System code for the industry the work falls under
+      - name: naics_description
+        description: NAICS title, most recent wording (titles changed in 2017, 2022 revisions)
+      - name: product_or_service_code
+        description: 4 character GSA Product and Service Code for what was bought (digit = product, letter = services/R&D/construction)
+      - name: product_or_service_code_description
+        description: PSC title, most recent wording  
+      - name: psc_portfolio_group
+        description: PSC rolled up to R&D, Supplies/Equipment, Construction, or Services from the first character of the code
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['R&D', 'Supplies/Equipment', 'Construction', 'Services']
