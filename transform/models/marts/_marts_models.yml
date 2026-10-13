@@ -41,3 +41,15 @@ models:
         description: County where the work is performed.
       - name: primary_place_of_performance_city_name
         description: City where the work is performed.
+  - name: dim_date
+    description: One row per day, 1950-01-01 to 2079-12-31. Fact dates outside this range have a null date key.
+    columns:
+      - name: date_day
+        description: Calendar date. Natural key, referenced by the fact table as action, period of performance start and end, and solicitation date.
+        data_tests:
+          - unique
+          - not_null
+      - name: fiscal_year
+        description: Federal fiscal year (starts October 1)
+        data_tests:
+          - not_null
