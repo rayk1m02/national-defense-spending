@@ -19,10 +19,19 @@ cleaned as (
         -- agency
         awarding_agency_code,
         awarding_agency_name,
-        awarding_sub_agency_name,
+        -- NPPD was renamed CISA in 2018
+        case
+            when awarding_sub_agency_name = 'National Protection and Programs Directorate'
+                then 'Cybersecurity and Infrastructure Security Agency'
+            else awarding_sub_agency_name
+        end as awarding_sub_agency_name,
         funding_agency_code,
         funding_agency_name,
-        funding_sub_agency_name,
+        case
+            when funding_sub_agency_name = 'National Protection and Programs Directorate'
+                then 'Cybersecurity and Infrastructure Security Agency'
+            else funding_sub_agency_name
+        end as funding_sub_agency_name,
 
         -- recipient
         recipient_uei,
