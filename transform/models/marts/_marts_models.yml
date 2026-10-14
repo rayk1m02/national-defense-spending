@@ -53,3 +53,23 @@ models:
         description: Federal fiscal year (starts October 1)
         data_tests:
           - not_null
+  - name: dim_agency
+    description: One row per agency, sub-agency. Combined from awarding and funding values.
+    columns:
+      - name: agency_key
+        description: Surrogate key, hash of agency_code and sub_agency_name
+        data_tests:
+          - unique
+          - not_null
+      - name: agency_code
+        description: Toptier agency code (some agencies use 4 digit codes)
+      - name: agency_name
+        description: Toptier agency name
+      - name: sub_agency_name
+        description: Subagency name, NPPD is mapped to CISA (renamed 2018). A few NPPD funding rows may be non-CISA components.
+      - name: budget_subfunction
+        description: Subfunction by agency code (051 DoD, 053 DOE, 054 DOT and DHS). Describes the awarding scope.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['051', '053', '054']
