@@ -126,3 +126,32 @@ models:
         description: True for each recipient's current version.
         data_tests:
           - not_null
+  - name: dim_award
+    description: >
+      One row per award type combination (award vs IDV, award type, IDV type, parent type, pricing).
+      parent_award_id_piid is on fct_transaction, since it identifies a specific parent vehicle (thousands of values) rather than a type.
+      including it would make this table almost one row per contract
+    columns:
+      - name: award_key
+        description: Surrogate key, hash of the seven type columns
+        data_tests:
+          - unique
+          - not_null
+      - name: award_or_idv_flag
+        description: Award (actual purchase) or IDV (Indefinite Delivery Vehicle that orders are placed under)
+      - name: award_type_code
+        description: A is BPA call, B is purchase order, C is delivery order, D is definitive contract, Null is IDV's.
+      - name: award_type
+        description: Award type description (most common wording for code)
+      - name: idv_type
+        description: Type of IDV (IDIQ, GSA schedule, BPA). Null for awards.
+      - name: parent_award_type
+        description: Type of the IDV an order was placed under. Null for no parent.
+      - name: multiple_or_single_award_idv
+        description: Whether the IDV was awarded to a single vendor or multiple
+      - name: type_of_idc
+        description: Indefinite delivery contract type (indefinite quantity, requirements, etc)
+      - name: type_of_contract_pricing_code
+        description: Pricing arrangement code (J for firm fixed price, U for cost plus fixed fee, etc)
+      - name: type_of_contract_pricing
+        description: Pricing arrangement description (most common wording for code)
