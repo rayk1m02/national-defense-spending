@@ -155,3 +155,44 @@ models:
         description: Pricing arrangement code (J for firm fixed price, U for cost plus fixed fee, etc)
       - name: type_of_contract_pricing
         description: Pricing arrangement description (most common wording for code)
+  - name: dim_competition
+    description: One row per competition/set-aside combination (junk dimension). number_of_offers_received is a measure on fct_transaction.
+    columns:
+      - name: competition_key
+        description: Surrogate key, hash of the four competition columns.
+        data_tests:
+          - unique
+          - not_null
+      - name: extent_competed
+        description: How much competition the contract had (e.g. full and open, not competed, follow-on).
+      - name: type_of_set_aside
+        description: Set-aside program the contract was reserved for (e.g. small business, 8(a), HUBZone). Null or none when not set aside.
+      - name: other_than_full_and_open_competition
+        description: Justification for not competing the contract. Null when the contract was competed. Wording standardized in staging (FAR citations removed).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - 'AUTHORIZED BY STATUTE'
+                  - 'AUTHORIZED RESALE'
+                  - 'BRAND NAME DESCRIPTION'
+                  - 'FOLLOW-ON CONTRACT'
+                  - 'INTERNATIONAL AGREEMENT'
+                  - 'LESS THAN OR EQUAL TO THE MICRO-PURCHASE THRESHOLD'
+                  - 'MOBILIZATION, ESSENTIAL R&D'
+                  - 'NATIONAL SECURITY'
+                  - 'ONLY ONE SOURCE - OTHER'
+                  - 'PATENT OR DATA RIGHTS'
+                  - 'PUBLIC INTEREST'
+                  - 'SAP NON-COMPETITION'
+                  - 'STANDARDIZATION'
+                  - 'UNIQUE SOURCE'
+                  - 'UNSOLICITED RESEARCH PROPOSAL'
+                  - 'URGENCY'
+                  - 'UTILITIES'
+      - name: contracting_officers_determination_of_business_size
+        description: Small or other than small, decided per contract against that contract's NAICS size standard. Describes the contract, not the company.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['SMALL BUSINESS', 'OTHER THAN SMALL BUSINESS']
