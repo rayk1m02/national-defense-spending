@@ -70,7 +70,13 @@ cleaned as (
         -- competition
         extent_competed,
         type_of_set_aside,
-        other_than_full_and_open_competition,
+        -- same justification appears with and without its FAR citation, so keep one
+        case
+            when other_than_full_and_open_competition like 'ONLY ONE SOURCE%' then 'ONLY ONE SOURCE - OTHER'
+            when other_than_full_and_open_competition like 'PATENT%' then 'PATENT OR DATA RIGHTS'
+            when other_than_full_and_open_competition like 'UTILITIES%' then 'UTILITIES'
+            else trim(regexp_replace(other_than_full_and_open_competition, '[(]FAR.*$', ''))
+        end as other_than_full_and_open_competition,
 
         -- dates
         action_date::date as action_date,
