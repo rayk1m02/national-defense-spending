@@ -73,3 +73,56 @@ models:
           - accepted_values:
               arguments:
                 values: ['051', '053', '054']
+  - name: dim_recipient
+    description: >
+      One row per recipient per version (scd2). A version is defined by a change in the dominant parent UEI or state in terms of the absolute federal obligation in a fiscal year.
+      Large companies can switch between entities under the same corporate family.
+    columns:
+      - name: recipient_key
+        description: Surrogate key (hash of recipient_uei and version's start fiscal year)
+        data_tests:
+          - unique
+          - not_null
+      - name: recipient_uei
+        description: Unique entity ID of the recipient.
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                where: "is_current"
+      - name: recipient_name
+        description: Recipient name, latest value
+      - name: recipient_parent_uei
+        description: Dominant parent UEI for this version
+      - name: recipient_parent_name
+        description: Recipient parent name, latest value.
+      - name: recipient_state_code
+        description: Dominant registered state for this version (where the company is based, not necessarily where work is performed)
+      - name: veteran_owned_business
+        description: Veteran-owned business, latest value.
+      - name: woman_owned_business
+        description: Woman-owned business, latest value.
+      - name: women_owned_small_business
+        description: Women-owned small business (WOSB program), latest value.
+      - name: minority_owned_business
+        description: Minority-owned business, latest value.
+      - name: small_disadvantaged_business
+        description: Small disadvantaged business, latest value.
+      - name: c8a_program_participant
+        description: Participant in the SBA 8(a) Business Development program, latest value.
+      - name: historically_underutilized_business_zone_hubzone_firm
+        description: Certified HUBZone firm (located in an economically distressed area), latest value.
+      - name: domestic_or_foreign_entity_code
+        description: Domestic or foreign entity code, latest value.
+      - name: domestic_or_foreign_entity
+        description: Domestic or foreign entity description, latest value.
+      - name: effective_start_date
+        description: First day of the version (Oct 1, start of its first fiscal year).
+        data_tests:
+          - not_null
+      - name: effective_end_date
+        description: Last day of the version (Sep 30, end of the fiscal year before the next version starts). Null for the current version.
+      - name: is_current
+        description: True for each recipient's current version.
+        data_tests:
+          - not_null
