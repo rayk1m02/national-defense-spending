@@ -12,13 +12,20 @@ with transactions as (
 
 with recipients as (
 
-    -- implement
+    select
+        recipient_key,
+        recipient_uei,
+        effective_start_date,
+        effective_end_date
+    from {{ ref('dim_recipient') }}
 
 ),
 
 with dates as (
 
-   -- implement 
+    select
+        date_day
+    from {{ ref('dim_date') }}
 
 )
 
@@ -26,12 +33,14 @@ select
     -- implement
 from transactions as t
 left join recipients as r
-    on --implement
+    on t.recipient_uei = r.recipient_uei
+        and t.action_date >= r.effective_start_date
+        and t.action_date <= r.effective_end_date
 left join dates as ad 
-    on -- implement for action date
+    on t.action_date = ad.date_day
 left join dates as ps
-    on -- implement for place_of_performance_start_date
+    on t.place_of_performance_start_date = ps.date_day
 left join dates as pe 
-    on -- implement for place_of_performance_end_date
+    on t.place_of_performance_end_date = pe.date_day
 left join dates as sd
-    on -- implement for solicitation_date
+    on t.soliciation_date = sd.date_day
