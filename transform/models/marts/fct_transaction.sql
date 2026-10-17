@@ -29,8 +29,24 @@ with dates as (
 
 )
 
-select 
-    -- implement
+select
+    -- degenerate dimensions
+    t.contract_transaction_unique_key,
+    t.contract_award_unique_key,
+    t.award_id_piid,
+    t.parent_award_id_piid,
+    t.transaction_number,
+    t.modification_number,
+    t.action_type_code,
+    t.action_type,
+    -- date keys (null when outside dim_dates window)
+    ad.date_day as action_date_key,
+    ps.date_day as pop_start_date_key,
+    pe.date_day as pop_end_date_key,
+    sd.date_day as solicitation_date_key,
+    -- dimension keys
+
+    -- measures
 from transactions as t
 left join recipients as r
     on t.recipient_uei = r.recipient_uei
