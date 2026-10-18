@@ -37,6 +37,6 @@ models:
       +schema: marts_nds
       +materialized: table
 
-seeds:
-  nds:
-    +schema: ref_nds
+# seeds:
+#   nds:
+#     +schema: ref_nds
