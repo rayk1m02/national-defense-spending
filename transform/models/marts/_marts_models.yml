@@ -2,32 +2,32 @@ version: 2
 
 models:
   - name: dim_product
-    description: One row per NAICS + PSC combination
+    description: One row per NAICS + PSC combination.
     columns:
       - name: product_key
-        description: Surrogate key, hash of naics_code and product_or_service_code
+        description: Surrogate key, hash of naics_code and product_or_service_code.
         data_tests:
           - unique
           - not_null
       - name: naics_code
-        description: 6 digit North American Industry Classification System code for the industry the work falls under
+        description: 6 digit North American Industry Classification System code for the industry the work falls under.
       - name: naics_description
-        description: NAICS title, most recent wording (titles changed in 2017, 2022 revisions)
+        description: NAICS title, most recent wording (titles changed in 2017, 2022 revisions).
       - name: product_or_service_code
-        description: 4 character GSA Product and Service Code for what was bought (digit = product, letter = services/R&D/construction)
+        description: 4 character GSA Product and Service Code for what was bought (digit = product, letter = services/R&D/construction).
       - name: product_or_service_code_description
-        description: PSC title, most recent wording  
+        description: PSC title, most recent wording.
       - name: psc_portfolio_group
-        description: PSC rolled up to R&D, Supplies/Equipment, Construction, or Services from the first character of the code
+        description: PSC rolled up to R&D, Supplies/Equipment, Construction, or Services from the first character of the code.
         data_tests:
           - accepted_values:
               arguments:
                 values: ['R&D', 'Supplies/Equipment', 'Construction', 'Services']
   - name: dim_location
-    description: One row per place of performance (country, state, county, city)
+    description: One row per place of performance (country, state, county, city).
     columns:
       - name: location_key
-        description: Surrogate key, hash of country, state code, county, and city
+        description: Surrogate key, hash of country, state code, county, and city.
         data_tests:
           - unique
           - not_null
@@ -50,21 +50,21 @@ models:
           - unique
           - not_null
       - name: fiscal_year
-        description: Federal fiscal year (starts October 1)
+        description: Federal fiscal year (starts October 1).
         data_tests:
           - not_null
   - name: dim_agency
     description: One row per agency, sub-agency. Combined from awarding and funding values.
     columns:
       - name: agency_key
-        description: Surrogate key, hash of agency_code and sub_agency_name
+        description: Surrogate key, hash of agency_code and sub_agency_name.
         data_tests:
           - unique
           - not_null
       - name: agency_code
-        description: Toptier agency code (some agencies use 4 digit codes)
+        description: Toptier agency code (some agencies use 4 digit codes).
       - name: agency_name
-        description: Toptier agency name
+        description: Toptier agency name.
       - name: sub_agency_name
         description: Subagency name, NPPD is mapped to CISA (renamed 2018). A few NPPD funding rows may be non-CISA components.
       - name: budget_subfunction
@@ -79,7 +79,7 @@ models:
       Large companies can switch between entities under the same corporate family.
     columns:
       - name: recipient_key
-        description: Surrogate key (hash of recipient_uei and version's start fiscal year)
+        description: Surrogate key (hash of recipient_uei and version's start fiscal year).
         data_tests:
           - unique
           - not_null
@@ -91,13 +91,13 @@ models:
               config:
                 where: "is_current"
       - name: recipient_name
-        description: Recipient name, latest value
+        description: Recipient name, latest value.
       - name: recipient_parent_uei
-        description: Dominant parent UEI for this version
+        description: Dominant parent UEI for this version.
       - name: recipient_parent_name
         description: Recipient parent name, latest value.
       - name: recipient_state_code
-        description: Dominant registered state for this version (where the company is based, not necessarily where work is performed)
+        description: Dominant registered state for this version (where the company is based, not necessarily where work is performed).
       - name: veteran_owned_business
         description: Veteran-owned business, latest value.
       - name: woman_owned_business
@@ -130,31 +130,31 @@ models:
     description: >
       One row per award type combination (award vs IDV, award type, IDV type, parent type, pricing).
       parent_award_id_piid is on fct_transaction, since it identifies a specific parent vehicle (thousands of values) rather than a type.
-      including it would make this table almost one row per contract
+      Including it would make this table almost one row per contract.
     columns:
       - name: award_key
-        description: Surrogate key, hash of the seven type columns
+        description: Surrogate key, hash of the seven type columns.
         data_tests:
           - unique
           - not_null
       - name: award_or_idv_flag
-        description: Award (actual purchase) or IDV (Indefinite Delivery Vehicle that orders are placed under)
+        description: Award (actual purchase) or IDV (Indefinite Delivery Vehicle that orders are placed under).
       - name: award_type_code
         description: A is BPA call, B is purchase order, C is delivery order, D is definitive contract, Null is IDV's.
       - name: award_type
-        description: Award type description (most common wording for code)
+        description: Award type description (most common wording for code).
       - name: idv_type
         description: Type of IDV (IDIQ, GSA schedule, BPA). Null for awards.
       - name: parent_award_type
         description: Type of the IDV an order was placed under. Null for no parent.
       - name: multiple_or_single_award_idv
-        description: Whether the IDV was awarded to a single vendor or multiple
+        description: Whether the IDV was awarded to a single vendor or multiple.
       - name: type_of_idc
-        description: Indefinite delivery contract type (indefinite quantity, requirements, etc)
+        description: Indefinite delivery contract type (indefinite quantity, requirements, etc).
       - name: type_of_contract_pricing_code
-        description: Pricing arrangement code (J for firm fixed price, U for cost plus fixed fee, etc)
+        description: Pricing arrangement code (J for firm fixed price, U for cost plus fixed fee, etc).
       - name: type_of_contract_pricing
-        description: Pricing arrangement description (most common wording for code)
+        description: Pricing arrangement description (most common wording for code).
   - name: dim_competition
     description: One row per competition/set-aside combination (junk dimension). number_of_offers_received is a measure on fct_transaction.
     columns:
@@ -196,3 +196,69 @@ models:
           - accepted_values:
               arguments:
                 values: ['SMALL BUSINESS', 'OTHER THAN SMALL BUSINESS']
+  - name: fct_transaction
+    description: One row per contract transaction. Measures plus keys to all seven dimension models.
+    columns:
+      - name: contract_transaction_unique_key
+        description: PK, unique per transaction.
+        data_tests:
+          - unique
+          - not_null
+      - name: action_date_key
+        description: FK to dim_date, role action date (when transaction happened).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: awarding_agency_key
+        description: FK to dim_agency, role awarding.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_agency')
+                field: agency_key
+      - name: funding_agency_key
+        description: FK to dim_agency, role funding.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_agency')
+                field: agency_key
+      - name: recipient_key
+        description: FK to dim_recipient, the version in effect on the action date.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_recipient')
+                field: recipient_key
+      - name: location_key
+        description: FK to dim_location.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_key
+      - name: product_key
+        description: FK to dim_product.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_key
+      - name: award_key
+        description: FK to dim_award.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_award')
+                field: award_key
+      - name: competition_key
+        description: FK to dim_competition.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_competition')
+                field: competition_key
