@@ -23,7 +23,7 @@ SOURCES = {
     "dhs": {
         "agency_id": 63,
         "toptier_code": "070",
-        "has_delta_file": False,
+        "has_delta_file": True,
         "filter": {
             "column": "federal_accounts_funding_this_award",
             "match": "any_token",                                       # cell can hold several values separated by ";"
