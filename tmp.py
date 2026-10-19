@@ -14,21 +14,9 @@ from dotenv import load_dotenv
 from extract.settings import PRESTAGED_PREFIX
 from extract.storage import get_client, list_keys
 
-# load_dotenv()
-
-# conn = redshift_connector.connect(
-#     host=os.environ["NDS_REDSHIFT_HOST"],
-#     port=int(os.environ["NDS_REDSHIFT_PORT"]),
-#     database=os.environ["NDS_REDSHIFT_DATABASE"],
-#     user=os.environ["NDS_REDSHIFT_USER"],
-#     password=os.environ["NDS_REDSHIFT_PASSWORD"],
-# )
-# cursor = conn.cursor()
-# cursor.execute("SELECT current_user, current_database()")
-# print(cursor.fetchone())
-# conn.close()
-
-keys = list_keys(get_client(), f"{PRESTAGED_PREFIX}/")
-for key in keys:
-    print(key)
-print(len(keys))
+dhs = SOURCES["dhs"]
+for fy in (2026, 2027):
+    files = list_monthly_files(dhs["agency_id"], fy)
+    print(fy)
+    for f in files:
+        print("  ", f["file_name"], f["updated_date"])

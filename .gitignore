@@ -1,7 +1,7 @@
 # Python
+tmp.py
 venv/
 __pycache__/
-tmp.py
 
 # Local data
 bulk_data_samples/
