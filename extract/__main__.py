@@ -1,5 +1,6 @@
 import os
 import logging
+import argparse
 
 from extract.bulkfiles import current_fiscal_year, select_monthly_files, download_monthly_files
 from extract.storage import get_client, build_key, exists, has_objects, upload
@@ -16,7 +17,7 @@ def run_extract(fiscal_years, source_names=None):
     client = get_client()
 
     for name, source in SOURCES.items():
-        if source_names and name not in source_names:                   # if given a source param, only run for those values
+        if source_names and name not in source_names:                   # if given a source param, only run for those values. Else, run for all sources
             continue
         full, delta = select_monthly_files(source, fiscal_years)
 
@@ -39,5 +40,11 @@ def run_extract(fiscal_years, source_names=None):
             os.remove(csv_path)
 
 logging.basicConfig(level=logging.INFO)
-run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1))
-#run_extract(range(2025, 2026), source_names=["doe"])
+# run_extract(range(2025, 2026), source_names=["doe"])
+
+parser = argparse.ArgumentParser()                      # options typed after a command
+parser.add_argument("--source", choices=list(SOURCES))  # register one optional ("--") option the parser should accept
+args = parser.parse_args()
+
+source_names = [args.source] if args.source else None    # No --source runs all sources
+run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1), source_names=source_names)
