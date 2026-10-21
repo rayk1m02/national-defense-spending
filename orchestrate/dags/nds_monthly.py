@@ -52,4 +52,14 @@ with DAG(
         bash_command=f"cd {REPO}/transform && dotenv -f ../.env run -- {DBT} deps && dotenv -f ../.env run -- {DBT} build",
     )
 
-    extracts >> load >> dbt_build
+    open_access = BashOperator(
+        task_id="open_redshift_access",
+        bash_command=f"cd {REPO} && python orchestrate/redshift_access.py open",
+    )
+
+    close_access = BashOperator(
+        task_id="close_redshift_access",
+        bash_command=f"cd {REPO} && python orchestrate/redshift_access.py close",
+    )
+
+    extracts >> open_access >> load >> dbt_build >> close_access.as_teardown(setups=open_access)
