@@ -16,7 +16,6 @@ downloads/
 # Other
 test.sql
 logs/
-*package-lock.yml
 
 # Airflow
 orchestrate/config/
