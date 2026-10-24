@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: rpt_spend_monthly
+    description: >
+      One row per fiscal month and combination of awarding agency, product group, competition bucket, action category, and domestic/foreign entity.
+      Sums of fct_transaction for the spend trend, service share, competition, product mix, seasonality, and new vs modification questions.
+    columns:
+      - name: fiscal_year
+        description: Federal fiscal year of the action date.
+        data_tests:
+          - not_null
+      - name: fiscal_month
+        description: Month of the fiscal year (1 is October, 12 is September).
+        data_tests:
+          - not_null
+      - name: month_start_date
+        description: First day of the action month. Date column for chart axes.
+        data_tests:
+          - not_null
+      - name: budget_subfunction
+        description: Subfunction of the awarding agency (051 DoD, 053 DOE, 054 DOT and DHS).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['051', '053', '054']
+      - name: agency_code
+        description: Awarding toptier agency code.
+      - name: sub_agency_name
+        description: Awarding sub-agency name.
+      - name: service_group
+        description: >
+          Awarding service. Navy includes Marine Corps, Air Force includes Space Force.
+          DOE is split by awarding office code into NNSA and EM (EM includes Hanford and Office of River Protection).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Army', 'Navy', 'Air Force', 'Defense-Wide', 'DOE NNSA', 'DOE EM', 'DHS CISA', 'DOT MARAD']
+      - name: psc_portfolio_group
+        description: PSC rolled up to R&D, Supplies/Equipment, Construction, or Services.
+      - name: competition_bucket
+        description: >
+          extent_competed grouped into full and open, limited (restricted pool, SAP, competed orders), or sole source.
+          Orders under an IDV report the IDV's extent competed, not the order's.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Full and open', 'Limited', 'Sole source', 'Not reported']
+      - name: action_category
+        description: >
+          New contract or IDV, new order under an IDV, option exercise, funding only, or other modification.
+          New means modification number 0; orders have a parent award PIID.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['New contract or IDV', 'New order under an IDV', 'Option exercise', 'Funding only', 'Other modification']
+      - name: domestic_or_foreign_entity
+        description: Domestic or foreign entity description from dim_recipient, latest value.
+      - name: domestic_foreign_group
+        description: domestic_or_foreign_entity grouped into U.S., foreign-owned U.S.-incorporated, or foreign. Latest value, so past contracts reflect current ownership.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['U.S.', 'Foreign-owned, U.S.-incorporated', 'Foreign', 'Not reported']
+      - name: obligated
+        description: Sum of federal_action_obligation. Additive.
+      - name: transaction_count
+        description: Number of transactions. Additive.
