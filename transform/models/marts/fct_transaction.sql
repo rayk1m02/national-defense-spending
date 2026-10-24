@@ -39,6 +39,7 @@ select
     t.modification_number,
     t.action_type_code,
     t.action_type,
+    t.awarding_office_code,
     -- date keys (null when outside dim_dates window)
     ad.date_day as action_date_key,
     ps.date_day as pop_start_date_key,

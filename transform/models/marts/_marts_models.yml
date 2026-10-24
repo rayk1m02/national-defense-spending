@@ -204,6 +204,8 @@ models:
         data_tests:
           - unique
           - not_null
+      - name: awarding_office_code
+        description: Awarding office code. Used to group DOE defense offices (NNSA, EM).
       - name: action_date_key
         description: FK to dim_date, role action date (when transaction happened).
         data_tests:
