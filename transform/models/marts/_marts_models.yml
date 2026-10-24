@@ -206,6 +206,8 @@ models:
           - not_null
       - name: awarding_office_code
         description: Awarding office code. Used to group DOE defense offices (NNSA, EM).
+      - name: c8a_program_participant
+        description: 8(a) flag as of this transaction (dim_recipient has the latest value only). Same for the other four business flags on this table.
       - name: action_date_key
         description: FK to dim_date, role action date (when transaction happened).
         data_tests:

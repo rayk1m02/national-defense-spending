@@ -40,6 +40,11 @@ select
     t.action_type_code,
     t.action_type,
     t.awarding_office_code,
+    t.c8a_program_participant,
+    t.small_disadvantaged_business,
+    t.women_owned_small_business,
+    t.historically_underutilized_business_zone_hubzone_firm,
+    t.veteran_owned_business,
     -- date keys (null when outside dim_dates window)
     ad.date_day as action_date_key,
     ps.date_day as pop_start_date_key,
