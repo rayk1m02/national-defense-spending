@@ -1,0 +1,21 @@
+version: 2
+
+seeds:
+  - name: recipient_group_overrides
+    description: >
+      Hand-made corrections to recipient groups for the largest companies. Merges group UEIs that belong to the same company and fixes wrong group names.
+      Reporting errors only, never acquisitions inside the data window (those stay separate for the consolidation question).
+    columns:
+      - name: recipient_group_uei
+        description: Group UEI as derived in rpt_recipient_year.
+        data_tests:
+          - unique
+          - not_null
+      - name: corrected_group_uei
+        description: Canonical group UEI for the company. Each canonical UEI also has a row pointing to itself.
+        data_tests:
+          - not_null
+      - name: corrected_group_name
+        description: Clean company name, the same on every row for a canonical UEI.
+        data_tests:
+          - not_null
