@@ -133,3 +133,35 @@ models:
         description: Rank of the recipient group by obligated dollars across all fiscal years (1 is largest). Ties share a rank.
         data_tests:
           - not_null
+  - name: rpt_state_year
+    description: >
+      One row per fiscal year, place of performance state, and recipient state. Sums of fct_transaction for the geographic questions.
+      Foreign and Unknown rows are kept so totals reconcile; state shares should use US states and territories only.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - fiscal_year
+              - pop_state
+              - recipient_state
+    columns:
+      - name: fiscal_year
+        description: Federal fiscal year of the action date.
+        data_tests:
+          - not_null
+      - name: pop_state
+        description: >
+          Place of performance state or territory code (where the work is done).
+          Foreign when performed outside the US, Unknown when the country is missing or a US location has no state.
+        data_tests:
+          - not_null
+      - name: recipient_state
+        description: >
+          Recipient's registered state from the dim_recipient version in effect (where the company is based).
+          Foreign for foreign entities with no state, Unknown otherwise when missing.
+        data_tests:
+          - not_null
+      - name: obligated
+        description: Sum of federal_action_obligation. Additive.
+      - name: transaction_count
+        description: Number of transactions. Additive.
