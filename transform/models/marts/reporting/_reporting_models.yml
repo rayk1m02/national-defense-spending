@@ -74,6 +74,7 @@ models:
     description: >
       One row per recipient UEI per fiscal year. Sums of fct_transaction for the top 10, consolidation, contract type, and small business questions.
       Recipient group is the parent UEI from the dim_recipient version in effect, or the recipient's own UEI when there's no parent.
+      Group UEIs and names are corrected by recipient_group_overrides for the largest companies. Group ranks are computed after the corrections.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -95,11 +96,11 @@ models:
       - name: recipient_name
         description: Recipient name, latest value.
       - name: recipient_group_uei
-        description: Parent UEI for this recipient's version, or its own UEI when there's no parent. Used to rank companies.
+        description: Parent UEI for this recipient's version, or its own UEI when there's no parent. Corrected by recipient_group_overrides for the largest companies. Used to rank companies.
         data_tests:
           - not_null
       - name: recipient_group_name
-        description: Parent name (current name per USASpending), or the recipient's own name when there's no parent.
+        description: Parent name (current name per USASpending), or the recipient's own name when there's no parent. Corrected by recipient_group_overrides for the largest companies.
       - name: obligated
         description: Sum of federal_action_obligation. Additive.
       - name: transaction_count
@@ -124,3 +125,11 @@ models:
         description: Obligated where the HUBZone flag was true on the transaction and the contract was determined small.
       - name: obligated_veteran_owned
         description: Obligated where the veteran-owned flag was true on the transaction and the contract was determined small. Stands in for SDVOSB, which isn't in the data.
+      - name: group_rank_in_year
+        description: Rank of the recipient group by obligated dollars within the fiscal year (1 is largest). Ties share a rank.
+        data_tests:
+          - not_null
+      - name: group_rank_overall
+        description: Rank of the recipient group by obligated dollars across all fiscal years (1 is largest). Ties share a rank.
+        data_tests:
+          - not_null

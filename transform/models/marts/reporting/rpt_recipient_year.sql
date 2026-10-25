@@ -86,25 +86,75 @@ labeled as (
     left join awards a on t.award_key = a.award_key
     left join competitions c on t.competition_key = c.competition_key
 
+),
+
+overrides as (
+
+    select
+        recipient_group_uei,
+        corrected_group_uei,
+        corrected_group_name 
+    from {{ ref('recipient_group_overrides') }}
+
+),
+
+recipient_years as (
+
+    select
+        l.recipient_uei,
+        l.fiscal_year,
+        l.recipient_name,
+        coalesce(o.corrected_group_uei, l.recipient_group_uei) as recipient_group_uei,
+        coalesce(o.corrected_group_name, l.recipient_group_name) as recipient_group_name,
+        sum(l.federal_action_obligation) as obligated,
+        count(*) as transaction_count,
+        sum(case when l.pricing_bucket = 'Fixed price' then l.federal_action_obligation else 0 end) as obligated_fixed_price,
+        sum(case when l.pricing_bucket = 'Cost reimbursement' then l.federal_action_obligation else 0 end) as obligated_cost_reimbursement,
+        sum(case when l.pricing_bucket = 'Time and materials' then l.federal_action_obligation else 0 end) as obligated_time_and_materials,
+        sum(case when l.pricing_bucket = 'Other' then l.federal_action_obligation else 0 end) as obligated_other,
+        sum(case when l.is_small then l.federal_action_obligation else 0 end) as obligated_small_business,
+        sum(case when l.c8a_program_participant and l.is_small then l.federal_action_obligation else 0 end) as obligated_8a,
+        sum(case when l.small_disadvantaged_business and l.is_small then l.federal_action_obligation else 0 end) as obligated_sdb,
+        sum(case when l.women_owned_small_business and l.is_small then l.federal_action_obligation else 0 end) as obligated_wosb,
+        sum(case when l.historically_underutilized_business_zone_hubzone_firm and l.is_small then l.federal_action_obligation else 0 end) as obligated_hubzone,
+        sum(case when l.veteran_owned_business and l.is_small then l.federal_action_obligation else 0 end) as obligated_veteran_owned
+    from labeled as l
+    left join overrides as o
+        on l.recipient_group_uei = o.recipient_group_uei
+    group by 1, 2, 3, 4, 5
+
+),
+
+-- each group's rank within its fiscal year (top 10 per year, CR10)
+group_years as (
+
+    select
+        fiscal_year,
+        recipient_group_uei,
+        rank() over (partition by fiscal_year order by sum(obligated) desc) as group_rank_in_year
+    from recipient_years
+    group by 1, 2
+
+),
+
+-- each group's rank across all years (top 20 cumulative)
+group_overall as (
+
+    select
+        recipient_group_uei,
+        rank() over (order by sum(obligated) desc) as group_rank_overall
+    from recipient_years
+    group by 1
+
 )
 
 select
-    recipient_uei,
-    fiscal_year,
-    recipient_name,
-    recipient_group_uei,
-    recipient_group_name,
-    sum(federal_action_obligation) as obligated,
-    count(*) as transaction_count,
-    sum(case when pricing_bucket = 'Fixed price' then federal_action_obligation else 0 end) as obligated_fixed_price,
-    sum(case when pricing_bucket = 'Cost reimbursement' then federal_action_obligation else 0 end) as obligated_cost_reimbursement,
-    sum(case when pricing_bucket = 'Time and materials' then federal_action_obligation else 0 end) as obligated_time_and_materials,
-    sum(case when pricing_bucket = 'Other' then federal_action_obligation else 0 end) as obligated_other,
-    sum(case when is_small then federal_action_obligation else 0 end) as obligated_small_business,
-    sum(case when c8a_program_participant and is_small then federal_action_obligation else 0 end) as obligated_8a,
-    sum(case when small_disadvantaged_business and is_small then federal_action_obligation else 0 end) as obligated_sdb,
-    sum(case when women_owned_small_business and is_small then federal_action_obligation else 0 end) as obligated_wosb,
-    sum(case when historically_underutilized_business_zone_hubzone_firm and is_small then federal_action_obligation else 0 end) as obligated_hubzone,
-    sum(case when veteran_owned_business and is_small then federal_action_obligation else 0 end) as obligated_veteran_owned
-from labeled
-group by 1, 2, 3, 4, 5
+    ry.*,
+    gy.group_rank_in_year,
+    go.group_rank_overall
+from recipient_years as ry
+left join group_years as gy
+    on ry.fiscal_year = gy.fiscal_year
+    and ry.recipient_group_uei = gy.recipient_group_uei
+left join group_overall as go
+    on ry.recipient_group_uei = go.recipient_group_uei
