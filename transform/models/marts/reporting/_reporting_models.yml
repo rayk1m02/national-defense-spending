@@ -165,3 +165,34 @@ models:
         description: Sum of federal_action_obligation. Additive.
       - name: transaction_count
         description: Number of transactions. Additive.
+  - name: rpt_idv
+    description: >
+      One row per single-award IDIQ (IDC) whose base award is in the data window (FY2017 on). Utilization is order obligations to date over the ceiling.
+      Covers IDVs awarded by DoD, DOE, DHS, and DOT and the orders those agencies placed; orders by other agencies under these vehicles aren't in the data.
+      Multiple-award IDVs, BPAs, and BOAs are excluded (shared or nominal ceilings). IDVs with a zero ceiling are excluded.
+    columns:
+      - name: idv_key
+        description: contract_award_unique_key of the IDV.
+        data_tests:
+          - unique
+          - not_null
+      - name: award_id_piid
+        description: IDV PIID.
+      - name: base_fiscal_year
+        description: Fiscal year of the IDV's base award (modification 0). Group by this to compare cohorts.
+        data_tests:
+          - not_null
+      - name: sub_agency_name
+        description: Awarding sub-agency of the IDV.
+      - name: budget_subfunction
+        description: Subfunction of the awarding agency.
+      - name: recipient_name
+        description: IDV recipient, latest name.
+      - name: ceiling
+        description: potential_total_value_of_award, the current ceiling including all options. Can be raised by later modifications.
+      - name: orders_obligated
+        description: Sum of federal_action_obligation on orders under this IDV. 0 when there are no orders.
+      - name: order_count
+        description: Number of distinct orders under this IDV.
+      - name: utilization
+        description: orders_obligated / ceiling. Can exceed 1 when the ceiling was understated or raised. Recent cohorts are still accumulating orders.
