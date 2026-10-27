@@ -249,3 +249,30 @@ models:
         description: Shortest award length in the group.
       - name: max_duration_days
         description: Longest award length in the group.
+  - name: rpt_award_stats
+    description: >
+      One row per start fiscal year and award type, from int_awards. Medians and correlation aren't additive, so they're only valid at this level; don't sum or average them across rows.
+      size_length_correlation is the Pearson correlation of ln(obligated) and ln(duration_days + 1), using awards with positive obligated and a known length.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - start_fiscal_year
+              - award_type
+    columns:
+      - name: start_fiscal_year
+        description: Fiscal year of the award's base record.
+        data_tests:
+          - not_null
+      - name: award_type
+        description: Delivery order, purchase order, BPA call, or definitive contract.
+      - name: award_count
+        description: Number of awards.
+      - name: median_obligated
+        description: Median award total obligated.
+      - name: median_duration_days
+        description: Median award length in days, awards with a known length only.
+      - name: size_length_correlation
+        description: Correlation of log size and log length, from -1 to 1. Positive means larger awards tend to run longer.
+      - name: correlation_awards
+        description: Number of awards used in the correlation (positive obligated, known length).
