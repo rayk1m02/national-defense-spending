@@ -196,3 +196,56 @@ models:
         description: Number of distinct orders under this IDV.
       - name: utilization
         description: orders_obligated / ceiling. Can exceed 1 when the ceiling was understated or raised. Recent cohorts are still accumulating orders.
+  - name: rpt_award_profile
+    description: >
+      Awards (no IDVs) whose base record is in the data window, counted by start fiscal year, award type, service group, size bucket, and length bucket.
+      Size is total obligated across all transactions. Length is days from the base record's period of performance start to the latest end date.
+      Average length is duration_days_total / awards_with_duration. Medians and correlation are in rpt_award_stats.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - start_fiscal_year
+              - award_type
+              - service_group
+              - size_bucket
+              - length_bucket
+    columns:
+      - name: start_fiscal_year
+        description: Fiscal year of the award's base record (modification 0).
+        data_tests:
+          - not_null
+      - name: award_type
+        description: Delivery order, purchase order, BPA call, or definitive contract.
+      - name: service_group
+        description: Awarding service, from the service_group macro.
+        data_tests:
+          - not_null
+      - name: size_bucket
+        description: Total obligated grouped into ranges. $10K and $250K match the micro-purchase and simplified acquisition thresholds.
+        data_tests:
+          - not_null
+      - name: size_bucket_order
+        description: Sort order for size_bucket (1 is zero or negative, 8 is $1B and up).
+      - name: length_bucket
+        description: Award length grouped into ranges. Unknown when dates are missing or the end is before the start.
+        data_tests:
+          - not_null
+      - name: length_bucket_order
+        description: Sort order for length_bucket (1 is under 1 month, 6 is 5 years and up, 7 is unknown).
+      - name: award_count
+        description: Number of awards. Additive.
+      - name: obligated
+        description: Sum of the awards' total obligated. Additive.
+      - name: duration_days_total
+        description: Sum of award lengths in days, excluding unknown. Additive.
+      - name: awards_with_duration
+        description: Number of awards with a known length. Additive.
+      - name: min_obligated
+        description: Smallest award total in the group.
+      - name: max_obligated
+        description: Largest award total in the group.
+      - name: min_duration_days
+        description: Shortest award length in the group.
+      - name: max_duration_days
+        description: Longest award length in the group.
