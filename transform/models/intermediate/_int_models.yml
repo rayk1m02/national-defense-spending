@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: int_awards
+    description: >
+      One row per award (no IDVs) whose base record (modification 0) is in the data window. Shared award-level logic for the award reporting models.
+      Some awards have several mod 0 transactions; one is kept for the descriptive columns, and all transactions count toward obligated.
+    columns:
+      - name: contract_award_unique_key
+        description: Award key, unique per award.
+        data_tests:
+          - unique
+          - not_null
+      - name: award_id_piid
+        description: Award PIID.
+      - name: start_fiscal_year
+        description: Fiscal year of the base record.
+        data_tests:
+          - not_null
+      - name: award_type
+        description: Delivery order, purchase order, BPA call, or definitive contract.
+      - name: agency_code
+        description: Awarding toptier agency code.
+      - name: sub_agency_name
+        description: Awarding sub-agency name.
+      - name: service_group
+        description: Awarding service, from the service_group macro.
+        data_tests:
+          - not_null
+      - name: recipient_key
+        description: FK to dim_recipient, the version in effect on the base record's action date.
+      - name: obligated
+        description: Sum of federal_action_obligation across all of the award's transactions.
+      - name: start_date
+        description: Period of performance start on the base record.
+      - name: end_date
+        description: Latest period of performance end across the award's transactions.
+      - name: duration_days
+        description: Days from start_date to end_date. Null when either is missing or the end is before the start.

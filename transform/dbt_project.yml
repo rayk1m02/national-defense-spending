@@ -33,6 +33,9 @@ models:
     staging:
       +schema: stg_nds
       +materialized: table
+    intermediate:
+      +schema: int_nds
+      +materialized: table
     marts:
       +schema: marts_nds
       +materialized: table
