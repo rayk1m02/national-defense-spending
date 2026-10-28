@@ -47,6 +47,16 @@ awards as (
 
 ),
 
+award_rows as (
+
+    select
+        recipient_key,
+        start_fiscal_year,
+        obligated
+    from {{ ref('int_awards') }}
+
+),
+
 competitions as (
 
     select
@@ -95,6 +105,21 @@ overrides as (
         corrected_group_uei,
         corrected_group_name 
     from {{ ref('recipient_group_overrides') }}
+
+),
+
+-- awards started per recipient and fiscal year, with their lifetime obligations
+award_starts as (
+
+    select
+        r.recipient_uei,
+        ar.start_fiscal_year as fiscal_year,
+        count(*) as awards_started,
+        sum(ar.obligated) as awards_started_obligated
+    from award_rows as ar
+    join recipients as r
+        on ar.recipient_key = r.recipient_key
+    group by 1, 2
 
 ),
 
@@ -150,9 +175,14 @@ group_overall as (
 
 select
     ry.*,
+    coalesce(st.awards_started, 0) as awards_started,
+    coalesce(st.awards_started_obligated, 0) as awards_started_obligated,
     gy.group_rank_in_year,
     go.group_rank_overall
 from recipient_years as ry
+left join award_starts as st
+    on ry.recipient_uei = st.recipient_uei
+    and ry.fiscal_year = st.fiscal_year
 left join group_years as gy
     on ry.fiscal_year = gy.fiscal_year
     and ry.recipient_group_uei = gy.recipient_group_uei

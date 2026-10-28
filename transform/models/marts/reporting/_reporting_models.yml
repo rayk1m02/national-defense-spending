@@ -125,6 +125,10 @@ models:
         description: Obligated where the HUBZone flag was true on the transaction and the contract was determined small.
       - name: obligated_veteran_owned
         description: Obligated where the veteran-owned flag was true on the transaction and the contract was determined small. Stands in for SDVOSB, which isn't in the data.
+      - name: awards_started
+        description: Number of awards (no IDVs) whose base record is this recipient's in this fiscal year. Additive.
+      - name: awards_started_obligated
+        description: Lifetime obligations to date of those awards. Average award size is sum(awards_started_obligated) / sum(awards_started). Recent years are still accumulating.
       - name: group_rank_in_year
         description: Rank of the recipient group by obligated dollars within the fiscal year (1 is largest). Ties share a rank.
         data_tests:
