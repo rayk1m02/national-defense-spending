@@ -24,6 +24,12 @@ models:
           - accepted_values:
               arguments:
                 values: ['051', '053', '054']
+      - name: subfunction_label
+        description: budget_subfunction with a readable name, for chart legends.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['051 DoD', '053 DOE defense', '054 DHS CISA, DOT MARAD']
       - name: agency_code
         description: Awarding toptier agency code.
       - name: sub_agency_name

@@ -124,6 +124,11 @@ select
     fiscal_month,
     month_start_date,
     budget_subfunction,
+    case budget_subfunction
+        when '051' then '051 DoD'
+        when '053' then '053 DOE defense'
+        when '054' then '054 DHS CISA, DOT MARAD'
+    end as subfunction_label,
     agency_code,
     sub_agency_name,
     service_group,
@@ -135,4 +140,4 @@ select
     sum(federal_action_obligation) as obligated,
     count(*) as transaction_count
 from labeled
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
