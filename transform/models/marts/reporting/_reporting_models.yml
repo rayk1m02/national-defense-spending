@@ -278,7 +278,7 @@ models:
         description: Number of awards used in the correlation (positive obligated, known length).
   - name: rpt_award_outliers
     description: >
-      Awards from int_awards whose size is an extreme outlier for their sub-agency and award type: log obligated more than 3 IQRs above Q3 of the group.
+      Awards from int_awards whose size is an extreme outlier for their sub-agency, award type, and product group: log obligated more than 3 IQRs above Q3 of the group.
       Groups with fewer than 30 awards or a zero IQR are skipped. Positive obligated only.
     columns:
       - name: contract_award_unique_key
@@ -299,7 +299,7 @@ models:
       - name: service_group
         description: Awarding service.
       - name: psc_portfolio_group
-        description: Product group of the base record.
+        description: Product group of the base record, part of the comparison group. Unknown when the PSC is missing.
       - name: recipient_name
         description: Recipient, latest name.
       - name: recipient_group_name

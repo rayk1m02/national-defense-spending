@@ -1,5 +1,5 @@
 -- grain: one row per flagged award
--- flagged when log size is more than 3 iqrs above q3 of its sub-agency and award type group (groups of 30+ awards)
+-- flagged when log size is more than 3 iqrs above q3 of its sub-agency, award type, and product group (groups of 30+ awards)
 with awards as (
 
     select
@@ -10,7 +10,7 @@ with awards as (
         award_type,
         sub_agency_name,
         service_group,
-        psc_portfolio_group,
+        coalesce(psc_portfolio_group, 'Unknown') as psc_portfolio_group,
         recipient_key,
         obligated,
         ln(obligated::double precision) as log_obligated
@@ -46,12 +46,13 @@ baselines as (
     select
         sub_agency_name,
         award_type,
+        psc_portfolio_group,
         count(*) as group_awards,
         percentile_cont(0.25) within group (order by log_obligated) as q1,
         percentile_cont(0.50) within group (order by log_obligated) as q2,
         percentile_cont(0.75) within group (order by log_obligated) as q3
     from awards
-    group by 1, 2
+    group by 1, 2, 3
 
 ),
 
@@ -67,6 +68,7 @@ flagged as (
     join baselines as b
         on a.sub_agency_name = b.sub_agency_name
         and a.award_type = b.award_type
+        and a.psc_portfolio_group = b.psc_portfolio_group
     where b.group_awards >= 30
         and b.q3 > b.q1
         and a.log_obligated > b.q3 + 3 * (b.q3 - b.q1)
