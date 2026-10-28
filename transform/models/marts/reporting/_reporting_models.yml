@@ -29,7 +29,7 @@ models:
         data_tests:
           - accepted_values:
               arguments:
-                values: ['051 DOD', '053 DOE Defense', '054 DHS CISA, DOT MARAD']
+                values: ['051 DoD', '053 DOE Defense', '054 DHS CISA, DOT MARAD']
       - name: agency_code
         description: Awarding toptier agency code.
       - name: sub_agency_name
