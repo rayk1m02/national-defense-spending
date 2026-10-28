@@ -276,3 +276,45 @@ models:
         description: Correlation of log size and log length, from -1 to 1. Positive means larger awards tend to run longer.
       - name: correlation_awards
         description: Number of awards used in the correlation (positive obligated, known length).
+  - name: rpt_award_outliers
+    description: >
+      Awards from int_awards whose size is an extreme outlier for their sub-agency and award type: log obligated more than 3 IQRs above Q3 of the group.
+      Groups with fewer than 30 awards or a zero IQR are skipped. Positive obligated only.
+    columns:
+      - name: contract_award_unique_key
+        description: Award key.
+        data_tests:
+          - unique
+          - not_null
+      - name: award_id_piid
+        description: Award PIID.
+      - name: start_fiscal_year
+        description: Fiscal year of the base record.
+      - name: base_action_date
+        description: Date the award was made.
+      - name: award_type
+        description: Award type, part of the comparison group.
+      - name: sub_agency_name
+        description: Awarding sub-agency, part of the comparison group.
+      - name: service_group
+        description: Awarding service.
+      - name: psc_portfolio_group
+        description: Product group of the base record.
+      - name: recipient_name
+        description: Recipient, latest name.
+      - name: recipient_group_name
+        description: Recipient's company, corrected by recipient_group_overrides for the largest companies.
+      - name: obligated
+        description: Award total obligated.
+      - name: group_awards
+        description: Number of awards in the comparison group.
+      - name: group_median_obligated
+        description: Median award size in the comparison group.
+      - name: group_q3_obligated
+        description: 75th percentile award size in the comparison group.
+      - name: outlier_threshold_obligated
+        description: Size above which an award in this group is flagged.
+      - name: times_group_median
+        description: obligated divided by the group median.
+      - name: iqr_distance
+        description: How many IQRs (on the log scale) the award sits above Q3. Use to rank the list.
