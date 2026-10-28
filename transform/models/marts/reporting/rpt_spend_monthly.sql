@@ -125,7 +125,7 @@ select
     month_start_date,
     budget_subfunction,
     case budget_subfunction
-        when '051' then '051 DoD'
+        when '051' then '051 DOD'
         when '053' then '053 DOE Defense'
         when '054' then '054 DHS CISA, DOT MARAD'
     end as subfunction_label,
