@@ -132,12 +132,29 @@ select
     agency_code,
     sub_agency_name,
     service_group,
+    case service_group
+        when 'Navy' then 1
+        when 'Army' then 2
+        when 'Air Force' then 3
+        when 'Defense-Wide' then 4
+        when 'DOE NNSA' then 5
+        when 'DOE EM' then 6
+        when 'DHS CISA' then 7
+        when 'DOT MARAD' then 8
+    end as service_group_order,
     psc_portfolio_group,
     competition_bucket,
     action_category,
+    case action_category
+        when 'New contract or IDV' then 1
+        when 'New order under an IDV' then 2
+        when 'Funding only' then 3
+        when 'Option exercise' then 4
+        when 'Other modification' then 5
+    end as action_category_order,
     domestic_or_foreign_entity,
     domestic_foreign_group,
     sum(federal_action_obligation) as obligated,
     count(*) as transaction_count
 from labeled
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15

@@ -43,6 +43,10 @@ models:
           - accepted_values:
               arguments:
                 values: ['Army', 'Navy', 'Air Force', 'Defense-Wide', 'DOE NNSA', 'DOE EM', 'DHS CISA', 'DOT MARAD']
+      - name: service_group_order
+        description: Sort order for service_group in charts (DoD services, then DOE, then DHS/DOT).
+        data_tests:
+          - not_null
       - name: psc_portfolio_group
         description: PSC rolled up to R&D, Supplies/Equipment, Construction, or Services.
       - name: competition_bucket
@@ -63,6 +67,10 @@ models:
           - accepted_values:
               arguments:
                 values: ['New contract or IDV', 'New order under an IDV', 'Option exercise', 'Funding only', 'Other modification']
+      - name: action_category_order
+        description: Sort order for action_category in charts (new work first, then existing).
+        data_tests:
+          - not_null
       - name: domestic_or_foreign_entity
         description: Domestic or foreign entity description from dim_recipient, latest value.
       - name: domestic_foreign_group
