@@ -279,7 +279,8 @@ models:
   - name: rpt_award_outliers
     description: >
       Awards from int_awards whose size is an extreme outlier for their sub-agency, award type, and product group: log obligated more than 3 IQRs above Q3 of the group.
-      Groups with fewer than 30 awards or a zero IQR are skipped. Positive obligated only.
+      Baselines use only awards of $10K or more (the micro-purchase threshold), so token orders such as $500 minimum guarantees don't set the typical size.
+      Groups with fewer than 30 such awards are skipped. The IQR has a floor of ln(2) (a doubling). Positive obligated only.
     columns:
       - name: contract_award_unique_key
         description: Award key.
@@ -307,7 +308,7 @@ models:
       - name: obligated
         description: Award total obligated.
       - name: group_awards
-        description: Number of awards in the comparison group.
+        description: Number of awards of $10K or more in the comparison group.
       - name: group_median_obligated
         description: Median award size in the comparison group.
       - name: group_q3_obligated

@@ -52,6 +52,7 @@ baselines as (
         percentile_cont(0.50) within group (order by log_obligated) as q2,
         percentile_cont(0.75) within group (order by log_obligated) as q3
     from awards
+    where obligated >= 10000
     group by 1, 2, 3
 
 ),
@@ -63,15 +64,14 @@ flagged as (
         b.group_awards,
         b.q2,
         b.q3,
-        b.q3 - b.q1 as iqr
+        greatest(b.q3 - b.q1, ln(2)) as iqr
     from awards as a
     join baselines as b
         on a.sub_agency_name = b.sub_agency_name
         and a.award_type = b.award_type
         and a.psc_portfolio_group = b.psc_portfolio_group
     where b.group_awards >= 30
-        and b.q3 > b.q1
-        and a.log_obligated > b.q3 + 3 * (b.q3 - b.q1)
+        and a.log_obligated > b.q3 + 3 * greatest(b.q3 - b.q1, ln(2))
 
 )
 
