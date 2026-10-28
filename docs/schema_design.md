@@ -7,32 +7,34 @@ Star schema in `marts_nds`: one fact table and seven dimensions, built in dbt fr
 **Grain:** one row per contract transaction (a single action or modification on a contract or IDV).
 **Primary key:** `contract_transaction_unique_key`
 
-| Column                                    | Role                                                                                         |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `contract_transaction_unique_key`         | primary key                                                                                  |
-| `contract_award_unique_key`               | degenerate dim, identifies the award                                                         |
-| `award_id_piid`                           | degenerate dim                                                                               |
-| `parent_award_id_piid`                    | degenerate dim, PIID of the parent IDV an order was placed under. Null for standalone awards |
-| `transaction_number`                      | degenerate dim                                                                               |
-| `modification_number`                     | degenerate dim                                                                               |
-| `action_type_code` / `action_type`        | degenerate dim                                                                               |
-| `action_date_key`                         | FK to dim_date, role: action date                                                            |
-| `pop_start_date_key`                      | FK to dim_date, role: period of performance start                                            |
-| `pop_end_date_key`                        | FK to dim_date, role: period of performance current end                                      |
-| `solicitation_date_key`                   | FK to dim_date, role: solicitation date                                                      |
-| `awarding_agency_key`                     | FK to dim_agency, role: awarding                                                             |
-| `funding_agency_key`                      | FK to dim_agency, role: funding                                                              |
-| `recipient_key`                           | FK to dim_recipient, version in effect on the action date                                    |
-| `location_key`                            | FK to dim_location                                                                           |
-| `product_key`                             | FK to dim_product                                                                            |
-| `award_key`                               | FK to dim_award                                                                              |
-| `competition_key`                         | FK to dim_competition                                                                        |
-| `federal_action_obligation`               | measure, additive                                                                            |
-| `total_dollars_obligated`                 | measure, award-level snapshot, not additive                                                  |
-| `total_outlayed_amount_for_overall_award` | measure, award-level snapshot, not additive                                                  |
-| `current_total_value_of_award`            | measure, award-level snapshot, not additive                                                  |
-| `potential_total_value_of_award`          | measure, award-level snapshot, not additive                                                  |
-| `number_of_offers_received`               | measure, average it, don't sum it                                                            |
+| Column                                                                                                                                                                     | Role                                                                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `contract_transaction_unique_key`                                                                                                                                          | primary key                                                                                         |
+| `contract_award_unique_key`                                                                                                                                                | degenerate dim, identifies the award                                                                |
+| `award_id_piid`                                                                                                                                                            | degenerate dim                                                                                      |
+| `parent_award_id_piid`                                                                                                                                                     | degenerate dim, PIID of the parent IDV an order was placed under. Null for standalone awards        |
+| `transaction_number`                                                                                                                                                       | degenerate dim                                                                                      |
+| `modification_number`                                                                                                                                                      | degenerate dim                                                                                      |
+| `action_type_code` / `action_type`                                                                                                                                         | degenerate dim                                                                                      |
+| `awarding_office_code`                                                                                                                                                     | degenerate dim, splits DOE into NNSA and EM                                                         |
+| `c8a_program_participant`, `small_disadvantaged_business`, `women_owned_small_business`, `historically_underutilized_business_zone_hubzone_firm`, `veteran_owned_business` | degenerate dims, business flags as of this transaction (dim_recipient keeps only the latest values) |
+| `action_date_key`                                                                                                                                                          | FK to dim_date, role: action date                                                                   |
+| `pop_start_date_key`                                                                                                                                                       | FK to dim_date, role: period of performance start                                                   |
+| `pop_end_date_key`                                                                                                                                                         | FK to dim_date, role: period of performance current end                                             |
+| `solicitation_date_key`                                                                                                                                                    | FK to dim_date, role: solicitation date                                                             |
+| `awarding_agency_key`                                                                                                                                                      | FK to dim_agency, role: awarding                                                                    |
+| `funding_agency_key`                                                                                                                                                       | FK to dim_agency, role: funding                                                                     |
+| `recipient_key`                                                                                                                                                            | FK to dim_recipient, version in effect on the action date                                           |
+| `location_key`                                                                                                                                                             | FK to dim_location                                                                                  |
+| `product_key`                                                                                                                                                              | FK to dim_product                                                                                   |
+| `award_key`                                                                                                                                                                | FK to dim_award                                                                                     |
+| `competition_key`                                                                                                                                                          | FK to dim_competition                                                                               |
+| `federal_action_obligation`                                                                                                                                                | measure, additive                                                                                   |
+| `total_dollars_obligated`                                                                                                                                                  | measure, award-level snapshot, not additive                                                         |
+| `total_outlayed_amount_for_overall_award`                                                                                                                                  | measure, award-level snapshot, not additive                                                         |
+| `current_total_value_of_award`                                                                                                                                             | measure, award-level snapshot, not additive                                                         |
+| `potential_total_value_of_award`                                                                                                                                           | measure, award-level snapshot, not additive                                                         |
+| `number_of_offers_received`                                                                                                                                                | measure, average it, don't sum it                                                                   |
 
 Dimension keys are recomputed by hashing the same staging columns, in the same order, as each dimension, instead of joining (a join can't match NULLs). Two exceptions: `recipient_key` is joined by action date within the version's date range, and date keys are joined to dim_date, so dates outside its window are NULL.
 
@@ -161,3 +163,47 @@ State name is the latest spelling per code.
 - `other_than_full_and_open_competition` is standardized in staging: 33 source values collapse to 17 (each justification appeared with and without its FAR citation).
 - Business size is decided per contract against that contract's NAICS size standard, so it describes the contract, not the company.
 - `number_of_offers_received` is a measure on the fact table.
+
+## Intermediate: int_awards
+
+Schema `int_nds`. One row per award (no IDVs) whose base record (modification 0) is in the data window. Shared by the three award reporting tables so the award-level rules live in one place.
+
+| Column                                            | Description                                                      |
+| ------------------------------------------------- | ---------------------------------------------------------------- |
+| `contract_award_unique_key`                       | award key, unique                                                |
+| `award_id_piid`                                   | award PIID                                                       |
+| `start_fiscal_year`                               | fiscal year of the base record                                   |
+| `base_action_date`                                | date the award was made                                          |
+| `award_type`                                      | delivery order, purchase order, BPA call, or definitive contract |
+| `agency_code`, `sub_agency_name`, `service_group` | awarding agency                                                  |
+| `psc_portfolio_group`                             | product group of the base record                                 |
+| `recipient_key`                                   | FK to dim_recipient, version in effect on the base record        |
+| `obligated`                                       | sum of all the award's transactions                              |
+| `start_date`, `end_date`                          | period of performance start on the base record, latest end date  |
+| `duration_days`                                   | days from start to end; NULL when missing or negative            |
+
+Some awards have several mod 0 transactions (same date, different `transaction_number`); one is kept for the descriptive columns.
+
+## Reporting tables
+
+Schema `marts_nds`. The only tables Power BI imports.
+
+| Table                | Grain                                                                                                           | Answers                                                                                  |
+| -------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `rpt_spend_monthly`  | fiscal month × agency × service group × product group × competition bucket × action category × domestic/foreign | spend trends, service share, competition, product mix, seasonality, new vs modifications |
+| `rpt_recipient_year` | recipient UEI × fiscal year, with corrected recipient group and group ranks                                     | top 10, CR10, consolidation, contract types, small business, average award size          |
+| `rpt_state_year`     | fiscal year × place of performance state × recipient state                                                      | geographic questions                                                                     |
+| `rpt_idv`            | single-award IDIQ                                                                                               | IDV utilization by base year cohort                                                      |
+| `rpt_award_profile`  | start year × award type × service group × size bucket × length bucket                                           | contract profiling, duration vs value                                                    |
+| `rpt_award_stats`    | start year × award type                                                                                         | medians, size vs length correlation                                                      |
+| `rpt_award_outliers` | flagged award                                                                                                   | outlier detection                                                                        |
+
+Column definitions and tests are in `transform/models/marts/reporting/_reporting_models.yml`.
+
+## Seed: recipient_group_overrides
+
+Schema `ref_nds`. Corrects split or misnamed corporate families for every group that ranked in the top 25 in any fiscal year. Each canonical group UEI has a row pointing to itself with the clean name. Reporting errors and renames only; mergers inside the window (Raytheon and UTC, L3 and Harris, Rockwell Collins, Vectrus and Vertex) stay separate for the consolidation question.
+
+## Macro: service_group
+
+Maps awarding agency code, sub-agency, and office code to Army, Navy (incl. Marine Corps), Air Force (incl. Space Force), Defense-Wide, DOE NNSA, DOE EM, DHS CISA, and DOT MARAD. Used by `rpt_spend_monthly` and `int_awards`.
