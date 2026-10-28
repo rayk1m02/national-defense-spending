@@ -11,6 +11,7 @@ with transactions as (
         awarding_agency_key,
         awarding_office_code,
         recipient_key,
+        product_key,
         action_date_key,
         pop_start_date_key,
         pop_end_date_key,
@@ -48,6 +49,15 @@ agencies as (
 
 ),
 
+products as (
+
+    select
+        product_key,
+        psc_portfolio_group
+    from {{ ref('dim_product') }}
+
+),
+
 -- one row per award: total obligated, start from the base row, latest end date
 award_totals as (
 
@@ -69,16 +79,19 @@ award_base as (
     select
         t.contract_award_unique_key,
         t.award_id_piid,
+        t.recipient_key,
+        t.action_date_key as base_action_date,
         d.fiscal_year as start_fiscal_year,
         a.award_type,
         ag.agency_code,
         ag.sub_agency_name,
-        {{ service_group('ag.agency_code', 'ag.sub_agency_name', 't.awarding_office_code') }} as service_group,
-        t.recipient_key
+        p.psc_portfolio_group,
+        {{ service_group('ag.agency_code', 'ag.sub_agency_name', 't.awarding_office_code') }} as service_group
     from transactions as t
     join awards as a on t.award_key = a.award_key
     left join dates as d on t.action_date_key = d.date_day
     left join agencies as ag on t.awarding_agency_key = ag.agency_key
+    left join products as p on t.product_key = p.product_key
     where a.award_or_idv_flag = 'AWARD'
         and t.modification_number = '0'
     qualify row_number() over (
@@ -98,6 +111,8 @@ select
     ab.sub_agency_name,
     ab.service_group,
     ab.recipient_key,
+    ab.base_action_date,
+    ab.psc_portfolio_group, 
     atl.obligated,
     atl.start_date,
     atl.end_date,

@@ -37,3 +37,7 @@ models:
         description: Latest period of performance end across the award's transactions.
       - name: duration_days
         description: Days from start_date to end_date. Null when either is missing or the end is before the start.
+      - name: base_action_date
+        description: Action date of the base record, when the award was made.
+      - name: psc_portfolio_group
+        description: PSC portfolio group of the base record (R&D, Supplies/Equipment, Construction, Services).
