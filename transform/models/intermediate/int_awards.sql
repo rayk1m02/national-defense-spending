@@ -5,6 +5,7 @@ with transactions as (
     select
         contract_award_unique_key,
         award_id_piid,
+        parent_award_id_piid,
         transaction_number,
         modification_number,
         award_key,
@@ -79,6 +80,7 @@ award_base as (
     select
         t.contract_award_unique_key,
         t.award_id_piid,
+        t.parent_award_id_piid,
         t.recipient_key,
         t.action_date_key as base_action_date,
         d.fiscal_year as start_fiscal_year,
@@ -105,6 +107,7 @@ award_base as (
 select
     ab.contract_award_unique_key,
     ab.award_id_piid,
+    ab.parent_award_id_piid,
     ab.start_fiscal_year,
     ab.award_type,
     ab.agency_code,

@@ -307,6 +307,8 @@ models:
           - not_null
       - name: award_id_piid
         description: Award PIID.
+      - name: parent_award_id_piid
+        description: PIID of the IDV or BPA the award was ordered under. Needed to identify BPA calls, whose own PIID is a call number.
       - name: start_fiscal_year
         description: Fiscal year of the base record.
       - name: base_action_date

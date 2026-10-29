@@ -5,6 +5,7 @@ with awards as (
     select
         contract_award_unique_key,
         award_id_piid,
+        parent_award_id_piid,
         start_fiscal_year,
         base_action_date,
         award_type,
@@ -78,6 +79,7 @@ flagged as (
 select
     f.contract_award_unique_key,
     f.award_id_piid,
+    f.parent_award_id_piid,
     f.start_fiscal_year,
     f.base_action_date,
     f.award_type,

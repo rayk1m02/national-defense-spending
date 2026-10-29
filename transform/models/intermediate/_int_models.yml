@@ -13,6 +13,8 @@ models:
           - not_null
       - name: award_id_piid
         description: Award PIID.
+      - name: parent_award_id_piid
+        description: PIID of the IDV or BPA this award was ordered under. Null for standalone awards.
       - name: start_fiscal_year
         description: Fiscal year of the base record.
         data_tests:
