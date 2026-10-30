@@ -4,7 +4,7 @@ Questions the project answers, grouped by theme. Each lists the suggested visual
 
 | Summary table        | Grain                                                                                                                 | Answers                                                                                                                                  |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `rpt_spend_monthly`  | fiscal month, awarding agency, service group, product group, competition bucket, action category, domestic vs foreign | spend trends, service share, competition, domestic vs foreign, product mix, seasonality, new vs modifications, inflation-adjusted trends |
+| `rpt_spend_monthly`  | fiscal month, awarding agency, service group, product group, competition bucket, action category, domestic vs foreign | spend trends, service share, competition, domestic vs foreign, product mix, seasonality, new vs modifications, inflation-adjusted        |
 | `rpt_recipient_year` | recipient UEI, fiscal year (with corrected recipient group and group ranks)                                           | top 10 share, consolidation, top 10 award size and contract types, small business                                                        |
 | `rpt_state_year`     | fiscal year, place of performance state, recipient state                                                              | geographic questions                                                                                                                     |
 | `rpt_idv`            | single-award IDIQ                                                                                                     | IDV utilization                                                                                                                          |
@@ -12,7 +12,7 @@ Questions the project answers, grouped by theme. Each lists the suggested visual
 | `rpt_award_stats`    | start year, award type                                                                                                | medians, size vs length correlation                                                                                                      |
 | `rpt_award_outliers` | flagged award                                                                                                         | outlier detection                                                                                                                        |
 
-Two seeds are deferred until their charts are built: CPI (inflation-adjusted trends) and small business goals.
+Inflation-adjusted trends use BLS CPI-U annual averages applied to fiscal year totals, outside dbt. The small business goals comparison is in Phase 2 (it needs a goals seed).
 
 ## Phase 1
 
@@ -82,12 +82,11 @@ Two seeds are deferred until their charts are built: CPI (inflation-adjusted tre
 
 ### Small business / set-asides
 
-- What share of obligated dollars goes to small business, 8(a) (program for socially/economically disadvantaged owners, who get sole-source and set-aside eligibility for up to 9 years), veteran-owned (stands in for SDVOSB, which isn't in the kept columns), WOSB (women owned), and HUBZone (businesses based in economically distressed areas) recipients by year, and how does that track against statutory goals (small business contracting targets Congress sets by law)? *Per-category trend lines with goal reference lines.*
+- What share of obligated dollars goes to small business, 8(a) (program for socially/economically disadvantaged owners, who get sole-source and set-aside eligibility for up to 9 years), veteran-owned (stands in for SDVOSB, which isn't in the kept columns), WOSB (women owned), and HUBZone (businesses based in economically distressed areas) recipients by year? *Per-category trend lines.*
   - Small business uses the contracting officer's size determination (dim_competition).
   - The other categories use each transaction's own flag (on fct_transaction), not dim_recipient's latest value, since firms enter and leave these programs (2,873 recipients have a changing 8(a) flag).
   - Category dollars count only on contracts the contracting officer determined small, as the SBA counts them.
-  - Goals are government-wide, shown as reference lines (none for veteran-owned, since the goal is for service-disabled firms). 8(a) has no goal of its own; it counts toward the small disadvantaged business goal.
-  - Tables: fct_transaction, dim_date, dim_competition, goals seed
+  - Tables: fct_transaction, dim_date, dim_competition
 
 ### Fiscal year-end seasonality
 
@@ -103,7 +102,8 @@ Two seeds are deferred until their charts are built: CPI (inflation-adjusted tre
 
 ### Inflation-adjusted trends
 
-- How do the spend trend lines change once adjusted by CPI (Consumer Price Index)? Replot them in real terms to see whether spending actually grew or only grew because prices did. *Same trend line, nominal vs real as dual series.*
+- How do the spend trend lines change once adjusted by CPI (Consumer Price Index)? Restate them in real terms to see whether spending actually grew or only grew because prices did. *Nominal vs real growth table in the README.*
+  - Fiscal year totals deflated with BLS CPI-U annual averages. CPI tracks consumer prices, so it's a proxy for defense purchase prices.
   - Tables: fct_transaction, dim_date, dim_agency
 
 ### Outlier / anomaly detection
@@ -153,6 +153,8 @@ Two seeds are deferred until their charts are built: CPI (inflation-adjusted tre
   - Tables: fct_transaction, dim_date, dim_competition, dim_product
 - Does the recipient-type mix differ between subfunction 051 (DoD) and 053 (DOE nuclear), or across Army vs Navy vs Air Force?
   - Tables: fct_transaction, dim_date, dim_recipient, dim_agency
+- How do the small business category shares track against statutory goals (small business contracting targets Congress sets by law)? Goals are government-wide, shown as reference lines (none for veteran-owned, since the goal is for service-disabled firms); 8(a) has no goal of its own (it counts toward the small disadvantaged business goal). *Per-category trend lines with goal reference lines.*
+  - Tables: fct_transaction, dim_date, dim_competition, goals seed
 
 ### Fiscal year-end seasonality
 
@@ -163,6 +165,11 @@ Two seeds are deferred until their charts are built: CPI (inflation-adjusted tre
 
 - Has the average size of new awards changed relative to the average size of modifications? Are agencies leaning more on modifying existing contracts instead of issuing new ones? *Dual trend line.*
   - Tables: fct_transaction, dim_date, dim_agency
+
+### Inflation-adjusted trends
+
+- Chart the spend trend lines in real terms with a CPI seed, nominal vs real as dual series (Phase 1 answers this in the README only).
+  - Tables: fct_transaction, dim_date, dim_agency, CPI seed
 
 ### Outlier / anomaly detection
 
