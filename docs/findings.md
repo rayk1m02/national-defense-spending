@@ -191,7 +191,7 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 - About two thirds of the growth since FY2017 is inflation. In FY2017 dollars, FY2025 is $400B.
 - Calendar-year CPI is applied to fiscal years. The 2025 value averages BLS's two half-year indexes, since October 2025 wasn't collected during the shutdown.
 - CPI tracks consumer prices, so it's a proxy for defense purchase prices.
-- Source: `step_changes.sql`, [BBER CPI-U annual averages](https://bber.unm.edu/data/cpi), [FRED CUUS0000SA0](https://fred.stlouisfed.org/data/CUUS0000SA0)
+- Source: `inflation_adjusted.sql`, CPI values in `seeds/cpi_u_annual.csv` from [BBER CPI-U annual averages](https://bber.unm.edu/data/cpi) and [FRED CUUS0000SA0](https://fred.stlouisfed.org/data/CUUS0000SA0)
 
 ## Outlier / anomaly detection
 

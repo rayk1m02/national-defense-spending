@@ -12,7 +12,7 @@ Questions the project answers, grouped by theme. Each lists the suggested visual
 | `rpt_award_stats`    | start year, award type                                                                                                | medians, size vs length correlation                                                                                                      |
 | `rpt_award_outliers` | flagged award                                                                                                         | outlier detection                                                                                                                        |
 
-Inflation-adjusted trends use BLS CPI-U annual averages applied to fiscal year totals, outside dbt. The small business goals comparison is in Phase 2 (it needs a goals seed).
+Inflation-adjusted trends use a CPI-U seed (`cpi_u_annual`) applied to fiscal year totals in an analysis. The small business goals comparison is in Phase 2 (it needs a goals seed).
 
 ## Phase 1
 
@@ -103,8 +103,8 @@ Inflation-adjusted trends use BLS CPI-U annual averages applied to fiscal year t
 ### Inflation-adjusted trends
 
 - How do the spend trend lines change once adjusted by CPI (Consumer Price Index)? Restate them in real terms to see whether spending actually grew or only grew because prices did. *Nominal vs real growth table in the README.*
-  - Fiscal year totals deflated with BLS CPI-U annual averages. CPI tracks consumer prices, so it's a proxy for defense purchase prices.
-  - Tables: fct_transaction, dim_date, dim_agency
+  - Fiscal year totals deflated with BLS CPI-U annual averages (`analyses/inflation_adjusted.sql`). CPI tracks consumer prices, so it's a proxy for defense purchase prices.
+  - Tables: fct_transaction, dim_date, dim_agency, cpi_u_annual seed
 
 ### Outlier / anomaly detection
 
@@ -168,8 +168,8 @@ Inflation-adjusted trends use BLS CPI-U annual averages applied to fiscal year t
 
 ### Inflation-adjusted trends
 
-- Chart the spend trend lines in real terms with a CPI seed, nominal vs real as dual series (Phase 1 answers this in the README only).
-  - Tables: fct_transaction, dim_date, dim_agency, CPI seed
+- Chart the spend trend lines in real terms, nominal vs real as dual series (Phase 1 answers this with an analysis, not a chart).
+  - Tables: fct_transaction, dim_date, dim_agency, cpi_u_annual seed
 
 ### Outlier / anomaly detection
 

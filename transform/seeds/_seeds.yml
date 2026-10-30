@@ -19,3 +19,23 @@ seeds:
         description: Clean company name, the same on every row for a canonical UEI.
         data_tests:
           - not_null
+  - name: cpi_u_annual
+    description: >
+      BLS CPI-U, U.S. city average, all items, 1982-84=100. Annual averages from https://bber.unm.edu/data/cpi.
+      BLS published no 2025 annual average (October 2025 wasn't collected), so 2025 averages the two half-year indexes from https://fred.stlouisfed.org/data/CUUS0000SA0.
+    config:
+      column_types:
+        calendar_year: integer
+        cpi_u: numeric(8,3)
+    columns:
+      - name: calendar_year
+        description: Calendar year, applied to the matching fiscal year.
+        data_tests:
+          - unique
+          - not_null
+      - name: cpi_u
+        description: Index value.
+        data_tests:
+          - not_null
+      - name: basis
+        description: How the value was derived.
