@@ -62,6 +62,9 @@ flowchart TD
 **dbt lineage:** source, staging, seven dimensions and the fact table, `int_awards`, the overrides seed, and the seven reporting tables.
 ![dbt lineage](docs/images/dbt_lineage.png)
 
+**Whiteboard:** working notes kept through the build: scope and agency hierarchy, extract design, S3 and Redshift state, the star schema, Airflow, and the dashboard layout.
+![Whiteboard](docs/images/whiteboard.jpg)
+
 ## Scope
 
 Federal contract and IDV award spending tied to OMB's National Defense budget function (050):
