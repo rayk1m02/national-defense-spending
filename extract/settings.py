@@ -16,3 +16,6 @@ PRESTAGED_PREFIX = "prestaged"
 DOWNLOAD_DIR = os.environ.get("NDS_DOWNLOAD_DIR", "downloads")
 
 FIRST_FISCAL_YEAR = 2017
+
+# The environment variables are not actually set yet so it defaults to dev, nds-extract-dev, and downloads. 
+# This is a design choice so that prod can be selected later by simply setting NDS_ENV=prod and without needing to change any code.

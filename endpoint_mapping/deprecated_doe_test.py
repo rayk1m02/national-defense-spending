@@ -11,7 +11,7 @@ r = requests.post(
 print(r.status_code)
 agencies = r.json()
 
-cfo = agencies["agencies"]["cfo_agencies"]
+cfo = agencies["agencies"]["cfo_agencies"]              # cfo - Chief Financial Officers Act covers the 24 major agencies
 doe = next(a for a in cfo if "Energy" in a["name"])     # next() pulls next item out of itereator. If no default is set, raises StopIteration exception
 print("DOE:", doe)                                      # {'name': 'Department of Energy', 'toptier_agency_id': 78, 'toptier_code': '089'}
 
@@ -84,8 +84,8 @@ while True:
 # grab the generated zip
 # note: the status response (data) also contains file_url, and it matches result["file_url"]
 r5 = requests.get(data["file_url"], timeout=60)
-with open("../bulk_data_samples/zip_2024_doe_download.zip", "wb") as f:      # wb (write binary)
-    f.write(r5.content)                                                 # save those bytes to disk
+with open("../bulk_data_samples/zip_2024_doe_download.zip", "wb") as f:     # wb (write binary)
+    f.write(r5.content)                                                     # save those bytes to disk
 
 # open zip without manual extraction
 with zipfile.ZipFile("../bulk_data_samples/zip_2024_doe_download.zip") as z:
