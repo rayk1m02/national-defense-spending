@@ -17,7 +17,7 @@ def run_extract(fiscal_years, source_names=None):
     client = get_client()
 
     for name, source in SOURCES.items():
-        if source_names and name not in source_names:                   # if given a source param, only run for those values. Else, run for all sources
+        if source_names and name not in source_names:                   # if given a source param, only run for those values. Else run for all sources
             continue
         full, delta = select_monthly_files(source, fiscal_years)
 
@@ -26,7 +26,7 @@ def run_extract(fiscal_years, source_names=None):
             csv_name = file["file_name"].replace(".zip", ".csv")
             prestaged_key = build_key("prestaged", name, file, csv_name)
 
-            if is_loaded(client, name, file, raw_key, prestaged_key):
+            if is_loaded(client, name, file, raw_key, prestaged_key):   # only runs what's new (usually just the delta file)
                 continue
            
             dest = os.path.join(DOWNLOAD_DIR, name, file["file_name"])  # downloads\dod\FY2025_097_Contracts_Full_20260906.zip
@@ -42,9 +42,9 @@ def run_extract(fiscal_years, source_names=None):
 logging.basicConfig(level=logging.INFO)
 # run_extract(range(2025, 2026), source_names=["doe"])
 
-parser = argparse.ArgumentParser()                      # options typed after a command
-parser.add_argument("--source", choices=list(SOURCES))  # register one optional ("--") option the parser should accept
-args = parser.parse_args()
+parser = argparse.ArgumentParser()                      # reads options typed after a command
+parser.add_argument("--source", choices=list(SOURCES))  # register one optional ("--") option the parser should accept (dod, doe, dhs, or dot)
+args = parser.parse_args()                              # read what's actually tagged
 
-source_names = [args.source] if args.source else None    # No --source runs all sources
-run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1), source_names=source_names)
+source_names = [args.source] if args.source else None    # No --source runs all sources, else it wraps a single source into a list
+run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1), source_names=source_names)   # run_extract()
