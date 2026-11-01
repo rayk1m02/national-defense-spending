@@ -22,7 +22,7 @@ def list_monthly_files(agency_id, fiscal_year, attempts=5):
                 timeout=30
             )
             r.raise_for_status()
-            return r.json()["monthly_files"]
+            return r.json()["monthly_files"]    # Contains one Full file for that fiscal year as of the latest monthly publish, and one current Delta file (if applicable)
         except requests.exceptions.RequestException as e:
             status = getattr(e.response, "status_code", None)
             if (status is not None and status < 500) or attempt == attempts:
@@ -60,10 +60,10 @@ def select_monthly_files(source, fiscal_years):
     if len(delta_files) > 1:
         raise ValueError(f"Multiple Delta files for {source['agency_id']}: {list(delta_files)}")
 
-    return full_files, list(delta_files.values())
+    return full_files, list(delta_files.values()) # delta_files is a dict (no duplicates). Use list() so __main__.py can do full+delta without TypeError
 
 def download_monthly_files(url, dest, attempts=5):
-    os.makedirs(os.path.dirname(dest), exist_ok=True)           # creates a folder based on the folder part of dest path
+    os.makedirs(os.path.dirname(dest), exist_ok=True)           # creates a folder based on the folder part of dest path (downloads/<source>)
     tmp_path = dest + ".part"                                   # append path (since we process in chunks - temporary name)
 
     for attempt in range(1, attempts+1):
