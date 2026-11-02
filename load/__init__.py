@@ -1,0 +1,1 @@
+# marks load/ as a regular Python package, so python -m load can run its __main__.py and other code can do "from load import ..."

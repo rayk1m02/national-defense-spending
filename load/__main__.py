@@ -8,7 +8,7 @@ from extract.settings import BUCKET, PRESTAGED_PREFIX
 from extract.storage import get_client, list_keys
 
 RAW_TABLE = "raw_nds.contract_transactions"
-# temp table each file is copied into before inserting into the raw table
+# STAGE_TABLE - temp table each file is copied into before inserting into the raw table
 # COPY can only fill columns from the CSV, so each file lands here first
 # source, source_file, and _loaded_at are then added on the INSERT into the raw table.
 STAGE_TABLE = "stage_load"
@@ -40,7 +40,7 @@ def load_file(conn, key):
     # 65 column names from csv (in order)
     columns = ", ".join(COLUMNS)
     role_arn = os.environ["NDS_REDSHIFT_COPY_ROLE_ARN"]
-    cursor = conn.cursor()
+    cursor = conn.cursor() # connection is the session to Redshift, cursor is the handle for running statements in it
     try:
         cursor.execute(f"DROP TABLE IF EXISTS {STAGE_TABLE}")
         cursor.execute(f"CREATE TEMP TABLE {STAGE_TABLE} (LIKE {RAW_TABLE})")
@@ -52,9 +52,8 @@ def load_file(conn, key):
             IGNOREHEADER 1
             EMPTYASNULL
         """)
-        # rows loaded by the last/recent COPY in this session
-        cursor.execute("SELECT pg_last_copy_count()")
-        copied = cursor.fetchone()[0]
+        cursor.execute("SELECT pg_last_copy_count()") # rows loaded by the last/recent COPY in this session
+        copied = cursor.fetchone()[0] # one row, first value that is checked against inserted count below
         # remove rows from earlier load of this file, so a reload does not duplicate rows
         cursor.execute(f"DELETE FROM {RAW_TABLE} WHERE source_file = '{key}'")
         cursor.execute(f"""
@@ -77,12 +76,11 @@ def load_file(conn, key):
 def main():
     load_dotenv()
     # extract user policy only allows listing with a prefix "prestaged/*", so we append "/"
-    keys = list_keys(get_client(), f"{PRESTAGED_PREFIX}/")
-    conn = connect()
+    keys = list_keys(get_client(), f"{PRESTAGED_PREFIX}/") # list every prestaged CSV in S3
+    conn = connect() # open one Redshift session
     try:
         done = loaded_files(conn.cursor())
-        # only keys with no rows in the raw table yet
-        todo = [key for key in keys if key not in done]
+        todo = [key for key in keys if key not in done] # keeps only keys not loaded yet. In a normal month it's one delta per source, and once a year also each source's new FY full file
         print(f"{len(todo)} of {len(keys)} files to load")
         for key in todo:
             load_file(conn, key)

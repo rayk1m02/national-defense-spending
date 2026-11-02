@@ -1,7 +1,16 @@
+# this file writes the CREATE SCHEMA and CREATE TABLE SQL for raw_nds.contract_transaactions so that we do not hand-type the 68 columns.
+# run this once, then run the generated ddl/raw_contract_transactions.sql in Redshift
+
 import pandas as pd
 
 from extract.columns import COLUMNS
 
+'''
+df_itr = pd.read_csv(r"downloads\dod\FY....csv", dtype=str, chunksize=500_000) # iterator of DataFrames
+for chunk in df_itr:
+    chunk_maxes.append(chunk.apply(lambda s: s.dropna().astype(str).str.encode('utf-8').str.len().max())) # chunk.apply() runs lambda once per column
+max_bytes = pd.concat(chunk_maxes, axis=1).max(axis=1) # takes the max across chunks per column.
+'''
 MAX_BYTES_PATH = "load/max_bytes.csv"
 DDL_PATH = "load/ddl/raw_contract_transactions.sql"
 
