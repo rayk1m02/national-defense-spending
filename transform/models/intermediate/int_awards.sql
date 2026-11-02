@@ -74,7 +74,8 @@ award_totals as (
 
 ),
 
--- each award's base row for its descriptive columns; some awards have several mod 0 rows, keep one
+-- each award's base row for its descriptive columns
+-- some awards have several modification 0 rows, keep one
 award_base as (
 
     select
@@ -98,12 +99,14 @@ award_base as (
         and t.modification_number = '0'
     qualify row_number() over (
         partition by t.contract_award_unique_key
-        order by t.action_date_key, t.transaction_number
+        order by 
+            t.action_date_key, 
+            t.transaction_number
     ) = 1
 
 )
 
--- inner join keeps only awards that started in the window; negative durations are bad dates
+-- inner join keeps only awards that started in the window
 select
     ab.contract_award_unique_key,
     ab.award_id_piid,
@@ -119,6 +122,7 @@ select
     atl.obligated,
     atl.start_date,
     atl.end_date,
+    -- end before start is a bad date, so null instead of a negative duration
     case
         when datediff(day, atl.start_date, atl.end_date) >= 0
             then datediff(day, atl.start_date, atl.end_date)
