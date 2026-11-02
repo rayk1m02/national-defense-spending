@@ -71,4 +71,4 @@ aws iam list-policy-versions --policy-arn arn:aws:iam::381492047455:policy/nds-e
 
 Endpoint: `nds-dev-wg.381492047455.us-east-1.redshift-serverless.amazonaws.com:5439`
 
-If my IP changes, update the inbound rule on `nds-redshift-dev-sg`.
+If IP changes, update the inbound rule on `nds-redshift-dev-sg`.

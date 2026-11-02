@@ -26,25 +26,24 @@ def run_extract(fiscal_years, source_names=None):
             csv_name = file["file_name"].replace(".zip", ".csv")
             prestaged_key = build_key("prestaged", name, file, csv_name)
 
-            if is_loaded(client, name, file, raw_key, prestaged_key):   # only runs what's new (usually just the delta file)
+            if is_loaded(client, name, file, raw_key, prestaged_key):   # skip files already in S3 (a fiscal year's Full file loads once, then deltas carry its changes)
                 continue
            
-            dest = os.path.join(DOWNLOAD_DIR, name, file["file_name"])  # downloads\dod\FY2025_097_Contracts_Full_20260906.zip
+            dest = os.path.join(DOWNLOAD_DIR, name, file["file_name"])  # downloads/dod/FY2025_097_Contracts_Full_20260906.zip
             zip_path = download_monthly_files(file["url"], dest)
             if not exists(client, raw_key):                             # in the case that raw_key exists but prestage_key upload failed previously
-                upload(client, zip_path, raw_key)
+                upload(client, zip_path, raw_key)                       # upload raw zip files to S3
             csv_path = prestage(zip_path, source)
-            upload(client, csv_path, prestaged_key)
+            upload(client, csv_path, prestaged_key)                     # upload prestaged csv file to S3
            
             os.remove(zip_path)
             os.remove(csv_path)
 
 logging.basicConfig(level=logging.INFO)
-# run_extract(range(2025, 2026), source_names=["doe"])
 
 parser = argparse.ArgumentParser()                      # reads options typed after a command
 parser.add_argument("--source", choices=list(SOURCES))  # register one optional ("--") option the parser should accept (dod, doe, dhs, or dot)
-args = parser.parse_args()                              # read what's actually tagged
+args = parser.parse_args()                              # read what's actually typed
 
 source_names = [args.source] if args.source else None    # No --source runs all sources, else it wraps a single source into a list
-run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1), source_names=source_names)   # run_extract()
+run_extract(range(FIRST_FISCAL_YEAR, current_fiscal_year()+1), source_names=source_names)
