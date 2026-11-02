@@ -156,7 +156,10 @@ group_years as (
     select
         fiscal_year,
         recipient_group_uei,
-        rank() over (partition by fiscal_year order by sum(obligated) desc) as group_rank_in_year
+        rank() over (
+            partition by fiscal_year 
+            order by sum(obligated) desc
+        ) as group_rank_in_year
     from recipient_years
     group by 1, 2
 
@@ -167,7 +170,9 @@ group_overall as (
 
     select
         recipient_group_uei,
-        rank() over (order by sum(obligated) desc) as group_rank_overall
+        rank() over (
+            order by sum(obligated) desc
+        ) as group_rank_overall
     from recipient_years
     group by 1
 

@@ -89,6 +89,9 @@ idv_ceiling as (
 ),
 
 -- orders summed under their parent IDV, key rebuilt from the order's own key
+-- order:  CONT_AWD_<order piid>_<agency>_<parent idv piid>_<parent agency>
+--           1    2       3          4            5               6
+-- IDV:    CONT_IDV_<idv piid>_<agency>
 orders as (
 
     select
