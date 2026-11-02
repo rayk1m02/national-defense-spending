@@ -29,7 +29,9 @@ award_type_names as (
     group by 1, 2
     qualify row_number() over (
         partition by award_type_code
-        order by count(*) desc, award_type
+        order by 
+            count(*) desc, 
+            award_type
     ) = 1
 
 ),
@@ -45,7 +47,9 @@ pricing_names as (
     group by 1, 2
     qualify row_number() over (
         partition by type_of_contract_pricing_code
-        order by count(*) desc, type_of_contract_pricing
+        order by 
+            count(*) desc, 
+            type_of_contract_pricing
     ) = 1
 
 ),

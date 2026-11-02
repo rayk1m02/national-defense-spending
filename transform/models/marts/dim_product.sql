@@ -1,3 +1,5 @@
+-- grain: one row per naics_code, product_or_service_code combination (including nulls)
+-- natural key: naics_code + product_or_service_code
 with transactions as (
     
     select
@@ -13,42 +15,49 @@ with transactions as (
 -- latest non-null description per code
 naics as (
 
-    select naics_code, naics_description
+    select 
+        naics_code, 
+        naics_description
     from transactions t
     where naics_code is not null
         and naics_description is not null
     qualify row_number() over (
         partition by naics_code
-        order by action_date desc nulls last, naics_description
+        order by 
+            action_date desc nulls last, 
+            naics_description
     ) = 1
 
 ),
 
 psc as (
 
-    select product_or_service_code, product_or_service_code_description
+    select 
+        product_or_service_code, 
+        product_or_service_code_description
     from transactions as t
     where product_or_service_code is not null
         and product_or_service_code_description is not null
     qualify row_number() over (
         partition by product_or_service_code
-        order by action_date desc nulls last, product_or_service_code_description
+        order by 
+            action_date desc nulls last, 
+            product_or_service_code_description
     ) = 1
 
 ),
 
--- grain: every naics + psc pair in the data (including null pairs)
 t_pairs as (
 
-    select distinct naics_code, product_or_service_code
+    select distinct 
+        naics_code, 
+        product_or_service_code
     from transactions
 
 )
 
 select
-    {{ dbt_utils.generate_surrogate_key(
-        ['tp.naics_code', 'tp.product_or_service_code']
-    ) }} as product_key,
+    {{ dbt_utils.generate_surrogate_key(['tp.naics_code', 'tp.product_or_service_code']) }} as product_key,
     tp.naics_code,
     n.naics_description,
     tp.product_or_service_code,

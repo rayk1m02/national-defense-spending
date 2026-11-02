@@ -13,7 +13,7 @@ with transactions as (
 
 ),
 
--- one generic table for both roles, combining awarding and funding values
+-- one agency per row in a set of three columns (agency_code, agency_name, sub_agency_name)
 agencies as (
 
     select

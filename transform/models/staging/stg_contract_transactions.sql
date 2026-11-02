@@ -75,7 +75,7 @@ cleaned as (
             when other_than_full_and_open_competition like 'ONLY ONE SOURCE%' then 'ONLY ONE SOURCE - OTHER'
             when other_than_full_and_open_competition like 'PATENT%' then 'PATENT OR DATA RIGHTS'
             when other_than_full_and_open_competition like 'UTILITIES%' then 'UTILITIES'
-            else trim(regexp_replace(other_than_full_and_open_competition, '[(]FAR.*$', ''))
+            else trim(regexp_replace(other_than_full_and_open_competition, '[(]FAR.*$', '')) -- "URGENCY (FAR 6.302-2)" -> "URGENCY" (Federal Acquisition Regulation)
         end as other_than_full_and_open_competition,
 
         -- dates
@@ -130,7 +130,7 @@ deduped as (
 
     select *
     from cleaned as c
-    qualify row_number() over (
+    qualify row_number() over ( -- qualify filters rows on the result of a window function
         partition by contract_transaction_unique_key
         order by
             last_modified_date desc,
@@ -141,5 +141,4 @@ deduped as (
 
 select *
 from deduped
-where correction_delete_ind is null
-   or correction_delete_ind <> 'D'
+where correction_delete_ind is null or correction_delete_ind <> 'D'

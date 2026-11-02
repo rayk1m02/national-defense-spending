@@ -38,7 +38,10 @@ yearly_parent as (
         -- within each recipient + fiscal year group, prioritize sum($), then count of transactions, then alphabetically on parent UEI as last resort
         row_number() over (
             partition by recipient_uei, fiscal_year
-            order by sum(abs(federal_action_obligation)) desc, count(*) desc, recipient_parent_uei
+            order by 
+                sum(abs(federal_action_obligation)) desc, 
+                count(*) desc, 
+                recipient_parent_uei
         ) as rn
     from transactions
     group by 1, 2, 3
@@ -54,7 +57,10 @@ yearly_state as (
         fiscal_year,
         row_number() over (
             partition by recipient_uei, fiscal_year
-            order by sum(abs(federal_action_obligation)) desc, count(*) desc, recipient_state_code
+            order by 
+                sum(abs(federal_action_obligation)) desc, 
+                count(*) desc, 
+                recipient_state_code
         ) as rn
     from transactions
     group by 1, 2, 3
@@ -84,7 +90,10 @@ changes as (
 
     select
         *,
-        lag(attrs) over (partition by recipient_uei order by fiscal_year) as prev_attrs
+        lag(attrs) over (
+            partition by recipient_uei 
+            order by fiscal_year
+        ) as prev_attrs
     from yearly
 
 ),
@@ -97,7 +106,10 @@ versions as (
         recipient_parent_uei,
         recipient_state_code,
         fiscal_year as start_fy,
-        lead(fiscal_year) over (partition by recipient_uei order by fiscal_year) as next_start_fy
+        lead(fiscal_year) over (
+            partition by recipient_uei 
+            order by fiscal_year
+        ) as next_start_fy
     from changes
     where prev_attrs is null
         or attrs <> prev_attrs
@@ -122,13 +134,16 @@ latest as (
     from transactions as t
     qualify row_number() over (
         partition by recipient_uei
-        order by action_date desc, last_modified_date desc, contract_transaction_unique_key desc
+        order by 
+            action_date desc, 
+            last_modified_date desc, 
+            contract_transaction_unique_key desc
     ) = 1
 
 ),
 
 -- one name for each parent UEI (most recent)
--- name is handled separately in case of spelling differences which would create unwanted combinations/versions
+-- name is handled separately in case of spelling differences which would cause unwanted combinations
 parent_names as (
 
     select 
@@ -139,7 +154,9 @@ parent_names as (
         and recipient_parent_name is not null
     qualify row_number() over (
         partition by recipient_parent_uei
-        order by action_date desc, recipient_parent_name
+        order by 
+            action_date desc, 
+            recipient_parent_name
     ) = 1
 
 )

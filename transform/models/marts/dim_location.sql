@@ -1,3 +1,5 @@
+  -- grain: one row per country, state, county, city combination (including nulls)
+  -- natural key: country + state code + county + city (same order fct_transaction hashes)
 with transactions as (
 
     select
@@ -14,18 +16,21 @@ with transactions as (
 -- latest non-null name per state code (eg. FM has two spellings)
 state_names as (
 
-    select primary_place_of_performance_state_code, primary_place_of_performance_state_name
+    select 
+        primary_place_of_performance_state_code, 
+        primary_place_of_performance_state_name
     from transactions as t
     where primary_place_of_performance_state_code is not null
         and primary_place_of_performance_state_name is not null
     qualify row_number() over (
         partition by primary_place_of_performance_state_code
-        order by action_date desc nulls last, primary_place_of_performance_state_name
+        order by 
+            action_date desc nulls last, 
+            primary_place_of_performance_state_name
     ) = 1
 
 ),
 
--- grain: country + state + county + city combos (including nulls)
 locations as (
 
     select distinct
