@@ -4,14 +4,14 @@ An ELT pipeline and Power BI dashboard for U.S. national defense contract spendi
 
 **Stack:** Python, AWS S3, Redshift Serverless, dbt, Airflow (Docker Compose), Power BI
 
-Data is through USASpending's October 2026 publish: about 42.8 million contract transactions. FY2026 is incomplete because DoD reports with a 90-day lag.
+Data is through USASpending's October 2026 publish: about 41.8 million contract transactions. FY2026 is incomplete because DoD reports with a 90-day lag.
 
 ## Key findings
 
 - Contract obligations grew 55% from FY2017 to FY2025 ($340B to $526B), but only about 18% after inflation.
 - DOE's defense work, mostly NNSA, roughly doubled ($17.5B to $33.2B). Navy is the largest service.
 - The top 10 parent companies take 37% to 42% of each year's dollars, with no trend. Lockheed Martin received $74B in FY2025, more than twice the next company.
-- Mergers didn't speed up growth: three of five merged companies (RTX, Northrop + Orbital ATK, L3Harris) lost market share after their deal.
+- Mergers didn't speed up growth: four of five merged companies (RTX, Northrop + Orbital ATK, L3Harris, HII + Alion) lost market share after their deal.
 - Sole source is 38% to 46% of each year's dollars, with no sustained growth.
 - DoD puts about 15.5% of its annual dollars into September, nearly double an even month. Construction is the most end-loaded: 29.9% in September.
 - 86% of awards are under $10K but carry under 1% of dollars. The 337 awards of $1B and up carry about 29%.
@@ -90,7 +90,7 @@ DoD and DOE are each nearly synonymous with their own subfunction (051 and 053),
 ## Design decisions
 
 - **ELT.** `extract/` only downloads, lands, and scope-filters. Renaming, casting, and cleanup happen in dbt.
-- **Prestaging.** Bulk files have 297 columns. Redshift at 4 RPU caps tables at 100, and `COPY` can't read zips or skip CSV fields, so files are trimmed to the 65 columns the schema needs before load. The untouched zips stay in `raw/`.
+- **Prestaging.** Bulk files have 297 columns. Redshift at 4 RPU recommends at most 100 columns per table, and `COPY` can't read zips or skip CSV fields, so files are trimmed to the 65 columns the schema needs before load. The untouched zips stay in `raw/`.
 - **Full files once, Deltas monthly.** USASpending regenerates every year's Full file monthly, so re-pulling would duplicate rows. Staging keeps the latest version of each transaction by `last_modified_date` and drops ones whose latest version is a delete.
 - **Raw layer is all varchar.** Casting happens in staging, so a bad value fails a dbt test instead of a `COPY`. Each file loads into a temp table and is inserted with its S3 key, which makes reloads idempotent.
 - **Star schema.** Seven dimensions and `fct_transaction`, with `dbt_utils` surrogate keys.

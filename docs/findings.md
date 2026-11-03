@@ -48,19 +48,20 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 
 **Parent changes among the top 20, and the trend before and after**
 
-- Ownership changes in the window: CSRA to General Dynamics (FY2018), Orbital ATK to Northrop Grumman (FY2018), Rockwell Collins to UTC (FY2019), L3 and Harris (FY2020), Raytheon and UTC as RTX (FY2020), Alion to Huntington Ingalls (FY2022).
+- Ownership changes in the window (fiscal year the deal closed): CSRA to General Dynamics (FY2018), Orbital ATK to Northrop Grumman (FY2018), Rockwell Collins to UTC (FY2019), L3 and Harris (FY2019), Raytheon and UTC as RTX (FY2020), Alion to Huntington Ingalls (FY2021).
+- These five families (the two RTX deals count as one) are every verified merger among the top 20 groups that moved $0.5B+ in a year (next largest under $0.25B). Source: `top20_parent_changes.sql`
 - Sandia's operator moving from a Lockheed subsidiary to Honeywell (FY2018) shows up as a parent change but is a contract change, not a merger.
-- Average yearly dollars after vs before each deal (deal year excluded), against the whole market over the same years:
+- Average yearly dollars after vs before each deal (deal year excluded; both deal years for UTC), against the whole market over the same years:
 
 | Family                             | Before | After  | Change | Market |
 |------------------------------------|--------|--------|--------|--------|
 | General Dynamics + CSRA            | $14.9B | $22.3B | +50%   | +34%   |
-| HII + Alion                        | $7.6B  | $10.0B | +32%   | +25%   |
 | Northrop + Orbital ATK             | $11.6B | $13.9B | +20%   | +34%   |
-| UTC + Rockwell Collins + Raytheon  | $22.9B | $26.8B | +17%   | +25%   |
-| L3 + Harris                        | $7.3B  | $6.6B  | -9%    | +24%   |
+| HII + Alion                        | $7.8B  | $9.0B  | +16%   | +23%   |
+| UTC + Rockwell Collins + Raytheon  | $21.6B | $26.8B | +24%   | +30%   |
+| L3 + Harris                        | $7.6B  | $6.6B  | -13%   | +29%   |
 
-- Three of five families lost share after their deal. General Dynamics gained, mostly from a jump in FY2025 ($21.2B to $32.3B), years after it bought CSRA.
+- Four of five families lost share after their deal. Only General Dynamics gained, mostly from a jump in FY2025 ($21.2B to $32.3B), years after it bought CSRA.
 - This counts defense contract dollars from the four in-scope agencies only, not company revenue. Five deals is a small sample.
 - Source: `merger_before_after.sql`
 
