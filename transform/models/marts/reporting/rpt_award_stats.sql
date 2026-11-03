@@ -36,19 +36,22 @@ length_median as (
 ),
 
 -- pearson correlation on log size and log (length + 1), positive size and known length only
+-- do bigger awards also run longer?
 correlation_inputs as (
 
     select
         start_fiscal_year,
         award_type,
-        ln(obligated::double precision) as x,
-        ln(duration_days::double precision + 1) as y
+        ln(obligated::double precision) as x, -- award size on log scale
+        ln(duration_days::double precision + 1) as y -- length on log scale (+1 as some awards have same start and end date and ln(0) is undefined)
     from awards
     where obligated > 0
         and duration_days is not null
 
 ),
 
+-- pearson correlation (r): -1 to 1, how closely size and length rise together in a straight line
+-- written out from sums since redshift has no corr() aggregate
 correlation as (
 
     select

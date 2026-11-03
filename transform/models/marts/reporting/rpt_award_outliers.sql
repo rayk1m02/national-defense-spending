@@ -1,7 +1,7 @@
 -- grain: one row per flagged award
 -- flagged when log size is more than 3 iqrs above q3 of its sub-agency, award type, and product group (groups of 30+ awards)
 -- Interquartile Range (IQR): A measure of statistical dispersion. It is calculated as the difference between the 75th percentile (Q₃) and the 25th percentile (Q₁). It captures the middle 50% of your data.
--- Log Transformation: A mathematical operation used to compress wide-ranging data, stabilize variance, and make highly skewed distributions look more like a normal (bell-shaped) curve.
+-- Log is used to compress wide-ranging data, stabilize variance, and make highly skewed distributions look more like a normal (bell-shaped) curve.
 with awards as (
 
     select

@@ -1,6 +1,7 @@
--- Group records of $100M+ for the largest families. 
--- A family with more than one record (other than intended separate ones: acquisitions inside the window, joint ventures) needs rows in seeds/recipient_group_overrides.csv. 
--- Rerun after each data refresh.
+-- Data quality check for recipient grouping (not used by a model or dashboard).
+-- A company split across several group records has its dollars divided, which understates its top 10 rank and CR10 (Concentration ratio for share of total dollars).
+-- Lists each group record of $100M+ for the largest families. More than one record per family means rows are missing from seeds/recipient_group_overrides.csv, unless intended (acquisitions inside the window, joint ventures).
+-- Rerun after each data refresh, since new parent records can appear.
 
 select
     recipient_group_uei,
