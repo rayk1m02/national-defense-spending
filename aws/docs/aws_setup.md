@@ -23,7 +23,7 @@ Region: us-east-1. All resources tagged `Project=national-defense-spending` and 
 raw/<source>/full/fiscal_year=<YYYY>/
 raw/<source>/delta/load_date=<YYYY-MM-DD>/ # USASpending generation date (updated_date)
 ```
-`prestaged/` mirrors the same layout. DHS has no Delta files so far
+`prestaged/` mirrors the same layout.
 
 ### Verification commands
 
@@ -53,6 +53,10 @@ aws iam list-policy-versions --policy-arn arn:aws:iam::381492047455:policy/nds-e
 - `s3:ListBucket` limited to `prestaged/*`
 - No write access, no `raw/`, no prod
 
+`nds-sg-access-dev` user, policy `nds-sg-access-dev-policy` (`aws/iam/sg-access-dev-policy.json`), used by `orchestrate/redshift_access.py`:
+- `ec2:AuthorizeSecurityGroupIngress`, `ec2:RevokeSecurityGroupIngress` on `nds-redshift-dev-sg` only
+- `ec2:DescribeSecurityGroupRules` on `*` (describe actions don't support resource-level limits)
+
 ## Redshift Serverless
 
 | Setting               | Value                                                     |
@@ -66,9 +70,9 @@ aws iam list-policy-versions --policy-arn arn:aws:iam::381492047455:policy/nds-e
 | Encryption            | AWS-owned key                                             |
 | Enhanced VPC routing  | Off                                                       |
 | Publicly accessible   | On                                                        |
-| Security group        | `nds-redshift-dev-sg`: inbound TCP 5439 from my IP only   |
+| Security group        | `nds-redshift-dev-sg`: inbound TCP 5439 from saved work locations, plus a temporary `nds-airflow` rule the DAG adds and removes |
 | Default IAM role      | `nds-redshift-copy-dev`                                   |
 
 Endpoint: `nds-dev-wg.381492047455.us-east-1.redshift-serverless.amazonaws.com:5439`
 
-If IP changes, update the inbound rule on `nds-redshift-dev-sg`.
+Airflow runs add the current IP and remove it afterward (`orchestrate/redshift_access.py`). For manual work from a new network, add an inbound rule for that IP.

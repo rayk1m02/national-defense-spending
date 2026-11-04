@@ -22,7 +22,4 @@ Dev is the only environment built. Prod is designed but not deployed: the pipeli
 | Scheduler         | Airflow in Docker Compose on a laptop         | MWAA or a container service                                                       |
 
 Custom schemas are used as-is (no target prefix) because dev and prod are separate Redshift namespaces, so schema names never collide.
-
-### Promotion
-
-Changes are built and tested in dev first (`dbt build` plus the raw-layer checks), then run against prod with `NDS_ENV=prod` and `--target prod`. A first prod run would be a full backfill from the prod bucket.
+A first prod run would be a full backfill from the prod bucket
