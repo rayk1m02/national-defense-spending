@@ -49,9 +49,9 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 **Parent changes among the top 20, and the trend before and after**
 
 - Ownership changes in the window (fiscal year the deal closed): CSRA to General Dynamics (FY2018), Orbital ATK to Northrop Grumman (FY2018), Rockwell Collins to UTC (FY2019), L3 and Harris (FY2019), Raytheon and UTC as RTX (FY2020), Alion to Huntington Ingalls (FY2021).
-- These five families (the two RTX deals count as one) are every verified merger among the top 20 groups that moved $0.5B+ in a year (next largest under $0.25B). Source: `top20_parent_changes.sql`
+- These five families (Rockwell Collins and Raytheon, both joining UTC to form RTX, count as one) are every verified merger among the top 20 groups that moved $0.5B+ in a year (next largest under $0.25B). Source: `top20_parent_changes.sql`
 - Sandia's operator moving from a Lockheed subsidiary to Honeywell (FY2018) shows up as a parent change but is a contract change, not a merger.
-- Average yearly dollars after vs before each deal (deal year excluded; both deal years for UTC), against the whole market over the same years:
+- Average yearly dollars before vs after each deal (deal year excluded; both deal years for UTC), against the whole market over the same years:
 
 | Family                             | Before | After  | Change | Market |
 |------------------------------------|--------|--------|--------|--------|
@@ -61,9 +61,10 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 | UTC + Rockwell Collins + Raytheon  | $21.6B | $26.8B | +24%   | +30%   |
 | L3 + Harris                        | $7.6B  | $6.6B  | -13%   | +29%   |
 
-- Four of five families lost share after their deal. Only General Dynamics gained, mostly from a jump in FY2025 ($21.2B to $32.3B), years after it bought CSRA.
+- A family lost share when its change is below the market's.
+- Four of five families lost share after their deal. Only General Dynamics gained, and about half of its lead over the market comes from FY2025 ($21.2B to $32.3B), years after it bought CSRA.
 - This counts defense contract dollars from the four in-scope agencies only, not company revenue. Five deals is a small sample.
-- Source: `merger_before_after.sql`
+- Source: `merger_before_after.sql` (family dollars), `step_changes.sql` (market totals)
 
 ## Competition analysis
 
@@ -114,7 +115,7 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 **Where contractors are based vs where the work happens**
 
 - In FY2025, Virginia has about $74B by contractor base but $53B by work performed, consistent with headquarters around Washington, DC. Maryland and Ohio also skew to contractor base.
-- Pennsylvania, Alabama, and foreign locations skew to work performed.
+- Pennsylvania, Alabama, and foreign locations skew to work performed (more work is performed there than goes to contractors based there).
 - Source: Geography page
 
 ## Contract lifecycle / lead time
