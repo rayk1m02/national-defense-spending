@@ -122,29 +122,43 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 
 **IDV utilization**
 
-- Finished single-award IDIQs use about 55% to 62% of their ceiling. Median utilization outside DLA rises with vehicle age, from 8% (FY2026 starts) to 62% (FY2017 starts).
+- Single-award IDIQs that started FY2017 to FY2019, old enough that most have ended, use about 55% to 62% of their ceiling.
 - DLA's are much lower at every age (17% to 31% for FY2017 to FY2019 starts, 3% to 7% from FY2020). DLA's new single-award IDIQs nearly tripled from FY2019 (4,627) to FY2020 (12,942). The data doesn't show why.
-- Single-award only: multiple-award ceilings are shared across awardees and BPA ceilings are nominal. IDV records carry no end date, so utilization is shown by start year.
+- Single-award only: multiple-award vehicles share one ceiling across all awardees, and BPA ceilings are placeholders rather than real limits. IDV records carry no end date, so utilization is compared by start year.
 - Source: Awards page
 
 **Contract profiling**
 
-- 86% of awards started FY2017 on are under $10K but carry under 1% of dollars. 337 awards of $1B and up carry about 29%, and the 4,119 awards of $100M and up about half.
-- Medians (FY2019 and FY2023 starts): delivery order about $430 to $510 and 3 days; BPA call $1.7K to $2.1K, 17 to 27 days; purchase order $2.3K to $2.6K, 96 to 120 days; definitive contract $750K to $1M, about 600 days.
+- Of awards started since FY2017, 86% are under $10K and carry under 1% of the dollars. The 4,119 awards of $100M or more carry about 50%, and the 337 awards of $1B or more about 29%.
+- Median award size and length, FY2019 and FY2023 starts (ranges cover the two years):
+
+| Award type          | Median size    | Median length  |
+|---------------------|----------------|----------------|
+| Delivery order      | $430 to $510   | 3 days         |
+| BPA call            | $1.7K to $2.1K | 17 to 27 days  |
+| Purchase order      | $2.3K to $2.6K | 96 to 120 days |
+| Definitive contract | $750K to $1M   | about 600 days |
+
 - Definitive contracts are 0.4% of awards but 49% of dollars.
 - Source: Awards page, `rpt_award_stats`
 
 **Duration vs value**
 
 - Longer awards tend to be larger. Average length rises with every size bucket, from 25 days (under $10K) to 2,880 days ($1B and up).
-- Correlation of log size and log length: about 0.47 to 0.49 for definitive contracts, 0.39 to 0.54 for BPA calls, 0.39 to 0.40 for purchase orders, 0.23 to 0.26 for delivery orders. Length explains only part of size.
+- The relationship is moderate: the correlation of log size and log length is about 0.4 to 0.5 for most award types (0.25 for delivery orders), so length explains only part of size.
 - Source: Awards page, `rpt_award_stats`
 
 **Top 10 award size and contract types**
 
-- FY2025: the top 10's average award was $146,368 vs $60,275 for everyone else (2.4 times). Cost reimbursement was 36.6% of the top 10's dollars vs 31.7% (FY2019 35.9% vs 29.2%, FY2023 35.5% vs 28.7%).
-- The size gap depends on who's in the top 10. It was 16 times in FY2019 ($1,145,509 vs $70,900) and 36 times in FY2023 ($2,464,624 vs $68,542). In FY2025, Cencora (pharmaceutical distribution) started about 516,000 small orders, most of the top 10's awards, which pulls the top 10 average down.
-- The contract type gap is modest and likely reflects the top 10's R&D and development work, so it doesn't show more favorable terms.
+| Fiscal year | Avg award, top 10 | Avg award, everyone else | Ratio | Cost reimbursement, top 10 | Cost reimbursement, everyone else |
+|-------------|-------------------|--------------------------|-------|----------------------------|-----------------------------------|
+| FY2019      | $1.15M            | $70.9K                   | 16x   | 35.9%                      | 29.2%                             |
+| FY2023      | $2.46M            | $68.5K                   | 36x   | 35.5%                      | 28.7%                             |
+| FY2025      | $146.4K           | $60.3K                   | 2.4x  | 36.6%                      | 31.7%                             |
+
+- The top 10's awards are much larger on average, but the gap depends on who's in the top 10. In FY2025, Cencora (pharmaceutical distribution) started about 516,000 small orders, most of the top 10's awards, which pulls the top 10 average down.
+- Cost reimbursement: the government pays the contractor's actual costs plus a fee, used when work is hard to price up front (like R&D).
+- The top 10 use cost reimbursement about 5 to 7 points more than everyone else, likely because of their R&D and development work. It doesn't show they get more favorable terms.
 - Source: Contractors page
 
 ## Small business / set-asides
@@ -154,7 +168,7 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 - Small business takes about 18% to 21% of each year's dollars, fairly steady.
 - 8(a) drifts down from about 4% to about 3%, veteran-owned about 3.5%, WOSB rises from about 1.6% to 2.7%, HUBZone about 1.5%.
 - Small business uses the contracting officer's size determination per contract. Category dollars count only on contracts determined small, as the SBA counts them.
-- Veteran-owned stands in for service-disabled veteran-owned, which wasn't kept. The small disadvantaged business flag undercounts (below the 8(a) share it should contain), so it's left out.
+- Veteran-owned stands in for service-disabled veteran-owned, whose flag wasn't extracted. Small disadvantaged business is left out because its flag undercounts: its share comes out below 8(a), which it should include.
 - Source: Contractors page
 
 ## Fiscal year-end seasonality
@@ -168,16 +182,16 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 **Product mix near year-end**
 
 - Construction is the most end-loaded group: 29.9% of its dollars in September, 3.6 times an even month. Supplies/Equipment about 15%, R&D and Services about 12%.
-- Maintenance and repair (32.4% in September) spikes only slightly more than new construction (28.1%), so one-year funding is at most part of the reason. Both are low in October (3.8% and 2.3%).
+- Construction's spike isn't mainly expiring money: maintenance (one-year money) and new construction (five-year money) both spike in September, 32.4% vs 28.1%.
 - Source: Services and Products page, `construction_september_split.sql`
 
 ## New awards vs recompetes
 
 **New awards vs existing work**
 
-- About 38% to 45% of each year's dollars go to new awards. Brand new contracts and IDVs are 9% to 14%; the rest of the new money is new orders under existing IDVs.
-- The rest funds existing awards: funding-only modifications, option exercises, and other modifications.
-- Source: Spending Patterns page
+- About 38% to 45% of each year's dollars go to new awards and 55% to 62% to existing ones.
+- New awards: brand new contracts and IDVs are 9% to 14% of each year's dollars; the rest is new orders under existing IDVs.
+- Existing awards: funding-only modifications, option exercises, and other modifications.
 
 ## Inflation-adjusted trends
 
@@ -190,9 +204,9 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 | Nominal growth since FY2017 |         | +40%    | +55%    |
 | Real growth since FY2017    |         | +9%     | +18%    |
 
-- About two thirds of the growth since FY2017 is inflation. In FY2017 dollars, FY2025 is $400B.
-- Calendar-year CPI is applied to fiscal years. The 2025 value averages BLS's two half-year indexes, since October 2025 wasn't collected during the shutdown.
-- CPI tracks consumer prices, so it's a proxy for defense purchase prices.
+- More than half of the growth since FY2017 is inflation. In FY2017 dollars, FY2025 is $400B.
+- Calendar-year CPI is applied to fiscal years, which are offset by three months. The 2025 value averages the Bureau of Labor Statistics' two half-year indexes, since October 2025 wasn't collected during the shutdown.
+- CPI tracks consumer prices, not defense purchases, so real growth here is an approximation.
 - Source: `inflation_adjusted.sql`, CPI values in `seeds/cpi_u_annual.csv` from [BBER CPI-U annual averages](https://bber.unm.edu/data/cpi) and [FRED CUUS0000SA0](https://fred.stlouisfed.org/data/CUUS0000SA0)
 
 ## Outlier / anomaly detection
@@ -201,11 +215,11 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 
 - About 26,700 awards are flagged, $1.13T in total, mostly delivery orders.
 - The top of the list is DLA weapon system support orders (RTX, Bell Boeing, Northrop Grumman, Boeing) at 10,000 to 38,000 times DLA's typical order, plus cases outside DLA such as a $146M DARPA services contract at 424 times its group's typical award.
-- Method: IQR on log award size, flagged above Q3 + 3 IQR, within sub-agency, award type, and product group (groups of 30+). Baselines use awards of $10K or more and the IQR is floored at a doubling, so token orders and near-identical award sizes don't flag ordinary awards.
+- Method: IQR on log award size, flagged above Q3 + 3 IQR, within sub-agency, award type, and product group (groups of 30+). Two safeguards: "normal" is set only from awards of $10K or more, so thousands of tiny orders don't drag it down, and the IQR is never smaller than a 2x size difference, so groups where most awards are about the same size don't flag ordinary ones.
 - Source: Awards page
 
 ## Caveats
 
 - Scope is contracts and IDVs awarded by DoD, DOE's defense offices, DHS CISA, and DOT MARAD. Totals don't reconcile to the national defense budget, which includes non-contract spending.
-- DoD totals include Corps of Engineers civil works funding: $0.08B to $8.1B a year, under 2% of DoD obligations. It's tagged inconsistently, so these are lower bounds, and it's left in.
+- DoD totals include Corps of Engineers civil works funding. Tagged amounts are $0.08B to $8.1B a year (under 2% of DoD obligations), but tagging is inconsistent, so the true amount is likely higher. It's left in.
 - USASpending overwrites recipient names with current ones, so a company's past name isn't recoverable (Harris shows as L3Harris before the merger).
