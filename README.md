@@ -12,7 +12,7 @@ Data is through USASpending's October 2026 publish: about 41.8 million contract 
 - Navy is the largest DoD service.
 - DOE's defense work, mostly NNSA, roughly doubled ($17.5B to $33.2B).
 - The top 10 parent companies take 37% to 42% of each year's dollars, with no trend. Lockheed Martin received $74B in FY2025, more than twice the next company.
-- Mergers didn't speed up growth: four of five merged companies (RTX, Northrop + Orbital ATK, L3Harris, HII + Alion) lost market share after their deal.
+- Mergers didn't speed up defense contract growth: four of five merged companies (RTX, Northrop + Orbital ATK, L3Harris, HII + Alion) lost contract share after their deal.
 - Sole source is 38% to 46% of each year's dollars, with no sustained growth.
 - DoD puts about 15.5% of its annual dollars into September, nearly double an even month. Construction is the most end-loaded: 29.9% in September.
 - 86% of awards are under $10K but carry under 1% of dollars. The 337 awards of $1B and up carry about 29%.
