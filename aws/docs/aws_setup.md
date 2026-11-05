@@ -64,7 +64,7 @@ aws iam list-policy-versions --policy-arn arn:aws:iam::381492047455:policy/nds-e
 | Namespace             | `nds-dev`                                                 |
 | Workgroup             | `nds-dev-wg`                                              |
 | Database              | `nds`                                                     |
-| Admin user            | `nds_admin` (password in AWS Secret Manager)              |
+| Admin user            | `nds_admin` (password set manually, no rotation)          |
 | Base capacity         | 4 RPU                                                     |
 | Usage limit           | 40 RPU-hours monthly, turn off user queries               |
 | Encryption            | AWS-owned key                                             |
