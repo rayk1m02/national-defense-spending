@@ -4,7 +4,7 @@ An ELT pipeline and Power BI dashboard for U.S. national defense contract spendi
 
 **Stack:** Python, AWS S3, Redshift Serverless, dbt, Airflow (Docker Compose), Power BI
 
-Data is through USASpending's October 2026 publish: about 41.8 million contract transactions. FY2026 is incomplete because DoD reports with a 90-day lag.
+Data covers FY2017 through USASpending's October 2026 publish: about 41.8 million contract transactions. FY2026 is incomplete because DoD reports with a 90-day lag.
 
 ## Key findings
 
