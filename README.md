@@ -1,10 +1,10 @@
 # national-defense-spending
 
-An ELT pipeline and Power BI dashboard for U.S. national defense contract spending, FY2017 to present, built on USASpending.gov bulk files.
+An ELT pipeline and Power BI dashboard for U.S. national defense contract spending, built on USASpending.gov bulk files.
 
 **Stack:** Python, AWS S3, Redshift Serverless, dbt, Airflow (Docker Compose), Power BI
 
-Data covers FY2017 through USASpending's October 2026 publish: about 41.8 million contract transactions. FY2026 is incomplete because DoD reports with a 90-day lag.
+**Data:** FY2017 through USASpending's October 2026 publish, about 41.8 million contract transactions. FY2026 is incomplete because DoD reports with a 90-day lag.
 
 ## Key findings
 
