@@ -119,6 +119,8 @@ endpoint_mapping/  scripts used to work out the scope
 
 ## Running it
 
+Expects the AWS resources in [aws_setup.md](aws/docs/aws_setup.md). The account ID, bucket, and security group ID are set in `extract/settings.py` and `orchestrate/redshift_access.py`.
+
 Requires Python 3.13, AWS CLI profiles `nds-extract-dev` and `nds-sg-access-dev`, a Redshift Serverless workgroup, and Docker Desktop for Airflow.
 
 ```bash
