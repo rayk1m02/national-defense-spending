@@ -44,6 +44,27 @@ Each answer names its source: a dashboard page (screenshots in [images/](images/
 - USASpending splits large companies across several parent records, and the split changes over time. A seed (`recipient_group_overrides.csv`, 76 rows) merges them for every family that reached a yearly top 25. `recipient_group_gaps.sql` finds new records to add after a data refresh.
 - Source: Contractors page
 
+**Concentration index (HHI)**
+
+- HHI across all DoD (051) contractor groups stays far below 1,800, the level the 2023 DOJ/FTC Merger Guidelines treat as highly concentrated.
+- No trend: it ranges from 236 (FY2021) to 417 (FY2020), and the high years match the top 10 share's high years.
+- HHI moves with Lockheed Martin's share, which ranges from 10% to 18% and makes up 45% to 75% of each year's HHI. Without Lockheed, HHI stays between 104 and 135.
+- This treats all of DoD as one market. Individual markets, such as fighter jets, are far more concentrated.
+
+| Fiscal year | HHI |
+|-------------|-----|
+| FY2017      | 341 |
+| FY2018      | 255 |
+| FY2019      | 279 |
+| FY2020      | 417 |
+| FY2021      | 236 |
+| FY2022      | 246 |
+| FY2023      | 351 |
+| FY2024      | 241 |
+| FY2025      | 358 |
+
+- Source: `rpt_hhi_dod` (Lockheed check commented at the bottom of the file)
+
 ## Contractor consolidation (SCD2)
 
 **Parent changes among the top 20, and the trend before and after**

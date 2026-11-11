@@ -36,6 +36,9 @@ Inflation-adjusted trends use a CPI-U seed (`cpi_u_annual`) applied to fiscal ye
   - Recipients are counted at the parent level: the parent UEI from the dim_recipient version in effect at each transaction, or the recipient's own UEI when there's no parent.
   - Corporate families that USASpending splits or misnames are corrected by a seed for the largest companies (reporting errors and renames only, never acquisitions inside the window).
   - Tables: fct_transaction, dim_date, dim_recipient
+- How has an HHI (Herfindahl-Hirschman Index) computed across all 051 recipients moved over the data window? *Yearly HHI table.*
+  - Recipients are counted at the same corrected parent level as the top 10 share. Groups with a zero or negative total for the year are excluded, so shares add to 100%.
+  - Tables: fct_transaction, dim_date, dim_recipient, dim_agency, recipient_group_overrides (seed)
 
 ### Contractor consolidation (SCD2)
 
@@ -119,11 +122,6 @@ Inflation-adjusted trends use a CPI-U seed (`cpi_u_annual`) applied to fiscal ye
 
 - Within Defense-Wide, how does the DLA (Defense Logistics Agency) / DISA (Defense Information Systems Agency) / other split look, and has that mix shifted? *Ranked breakdown per year.*
   - Tables: fct_transaction, dim_date, dim_agency
-
-### Contractor market concentration
-
-- How has an HHI (Herfindahl-Hirschman Index) computed across all 051 recipients moved over the data window? *Single ratio, trend line.*
-  - Tables: fct_transaction, dim_date, dim_recipient
 
 ### Contractor consolidation (SCD2)
 
