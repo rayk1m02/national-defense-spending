@@ -154,3 +154,9 @@ The `nds_monthly` DAG runs on the 15th, after USASpending's monthly publish.
 - DHS and DOT rows with a blank funding account can't be attributed to 054 (up to about 5% of DHS dollars).
 - Scope is by awarding agency, so contracts other agencies award on behalf of CISA aren't counted.
 - DoD totals include some Corps of Engineers civil works funding (under 2% a year).
+
+## What I'd do next
+
+- Update dashboard with the next reruns of the pipeline
+- Answer phase 2 questions
+- A prod deployment
