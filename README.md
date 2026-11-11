@@ -155,7 +155,7 @@ The `nds_monthly` DAG runs on the 15th, after USASpending's monthly publish.
 - Scope is by awarding agency, so contracts other agencies award on behalf of CISA aren't counted.
 - DoD totals include some Corps of Engineers civil works funding (under 2% a year).
 
-## What I'd do next
+## Next steps
 
 - Update dashboard with the next reruns of the pipeline
 - Answer phase 2 questions
