@@ -339,3 +339,26 @@ models:
         description: obligated divided by the group median.
       - name: iqr_distance
         description: How many IQRs (on the log scale) the award sits above Q3. Use to rank the list.
+  - name: rpt_hhi_dod
+    description: >
+      One row per fiscal year, FY2017 to FY2025. HHI across DoD (051) contract recipients by awarding agency,
+      using corrected parent groups. Groups with a zero or negative total for the year are excluded, and shares are in percent.
+    columns:
+      - name: fiscal_year
+        description: Fiscal year
+        data_tests:
+          - unique
+          - not_null
+      - name: hhi
+        description: >
+          Herfindahl-Hirschman Index, a measure of market concentration: the sum of each group's squared share (0 to 10,000, where 10,000 is a monopoly).
+          2023 DOJ/FTC Merger Guidelines treat above 1,800 as highly concentrated.
+        data_tests:
+          - not_null
+      - name: total_share_pct
+        description: Should be 100% for each fiscal year (sum of all group shares).
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 99.999
+                max_value: 100.001
